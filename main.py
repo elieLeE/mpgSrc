@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from gui import application
+from gui import main_window
 
 
 def main():
@@ -8,6 +9,10 @@ def main():
 
     app = application.GuiApplication()
     app.initialize()
+
+    mainWindow = main_window.MainWindow(app)
+    mainWindow.showMaximized()
+
     app.startApp()
 
 

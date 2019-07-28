@@ -9,6 +9,10 @@ class CoreApplication(object):
         self._qApp = self._createQApplication()
 
     @staticmethod
+    def getName():
+        return "MPG Helper"
+
+    @staticmethod
     def _createQApplication():
         if QtCore.QCoreApplication.instance() is not None:
             return QtCore.QCoreApplication.instance()
@@ -19,4 +23,3 @@ class CoreApplication(object):
 
     def startApp(self):
         self._qApp.exec_()
-
