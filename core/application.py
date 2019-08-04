@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from PySide2 import QtCore
+from core import converting
 
 
 class CoreApplication(object):
@@ -23,3 +24,7 @@ class CoreApplication(object):
 
     def startApp(self):
         self._qApp.exec_()
+
+    @staticmethod
+    def convertMPGDataBaseFile(srcPath, desPath, champName, dayNumber):
+        converting.DataFileConverting.convertDataBaseFile(srcPath, desPath, champName, dayNumber)

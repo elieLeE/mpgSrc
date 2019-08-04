@@ -12,6 +12,9 @@ class GuiApplication(application.CoreApplication):
 
         self._windowManager = None
 
+    def getWindowManager(self):
+        return self._windowManager
+
     @staticmethod
     def _createQApplication():
         if QtCore.QCoreApplication.instance():
@@ -23,6 +26,5 @@ class GuiApplication(application.CoreApplication):
 
     def initialize(self):
         super(GuiApplication, self).initialize()
-        mainWindow = main_window.MainWindow(self)
-        self._windowManager = window_manager.WindowManager(self, mainWindow)
-
+        self._windowManager = window_manager.WindowManager(self)
+        self._windowManager.registerMainWindow(main_window.MainWindow(self))

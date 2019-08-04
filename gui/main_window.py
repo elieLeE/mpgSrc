@@ -1,6 +1,7 @@
 # coding=utf-8
 
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtCore
+
 from gui.central_widget import CentralWidget
 
 
@@ -18,3 +19,9 @@ class MainWindow(QtWidgets.QMainWindow):
         centralWidget = CentralWidget(self)
         self.setCentralWidget(centralWidget)
 
+        toolbar = QtWidgets.QToolBar(self.tr("Tool bar"), self)
+        toolbar.setMovable(False)
+        convertDataBaeAction = toolbar.addAction("Convert data base")
+        convertDataBaeAction.triggered.connect(self._application.getWindowManager().convertMPGDataBase)
+
+        self.addToolBar(toolbar)

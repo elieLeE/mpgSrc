@@ -10,4 +10,3 @@ class CentralWidget(QtWidgets.QWidget):
     def setupUi(self):
         label = QtWidgets.QLabel(self)
         label.setText("place holder")
-
