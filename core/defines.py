@@ -22,3 +22,22 @@ class ChampName(Enum):
     @staticmethod
     def items():
         return ChampName.__members__.items()
+
+
+class XML(object):
+    ATTR_GLOBAL_DATA_BASE = "GlobalDataBase"
+    ATTR_CHAMP = "champ"
+    ATTR_DAY_NUMBER = "dayNumber"
+    ATTR_TEAM = "team"
+    ATTR_PLAYER = "player"
+
+    TAG_VERSION = "version"
+    TAG_ID = "id"
+    TAG_NAME = "name"
+    TAG_POSITION = "pos"
+    TAG_EVAL = "eval"
+    TAG_GOAL_NUMBER = "goalNumber"
+    TAG_PRIZE = "prize"
+    TAG_PERCENT_TIT = "percentTit"
+
+

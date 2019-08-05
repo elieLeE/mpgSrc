@@ -23,6 +23,6 @@ class DataFileConverting(object):
             raise Exception("Path {} already exist".format(desPath))
 
         dataBaseInst = DataBase(champName, dayNumber)
-        data_reader.MPGDataBaseFileReader(srcPath).read(dataBaseInst)
+        data_reader.MPGDataBaseCSVFileReader(srcPath).read(dataBaseInst)
         data_writer.GlobalDataBaseFileWriter(desPath).write(dataBaseInst)
 

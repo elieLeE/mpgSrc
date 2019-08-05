@@ -2,8 +2,9 @@
 
 
 class Player(object):
-    def __init__(self, _id, position, eval, goalNumber, prize, percentTit):
-        self.__id = _id
+    def __init__(self, _id, name, position, eval, goalNumber, prize, percentTit, teamInst=None):
+        self._id = _id
+        self._name = name
         self._position = position
         self._eval = eval
         self._goalNumber = goalNumber
@@ -11,9 +12,14 @@ class Player(object):
         self._percentTit = percentTit
 
         self._teamInst = None
+        if teamInst is not None:
+            self.setTeam(teamInst)
 
     def getId(self):
-        return self.__id
+        return self._id
+
+    def getName(self):
+        return self._name
 
     def getPosition(self):
         return self._position
