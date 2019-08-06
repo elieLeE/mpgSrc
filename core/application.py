@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from PySide2 import QtCore
-from core import converting
+from core.application_manager import ApplicationManager
 
 
 class CoreApplication(object):
@@ -9,9 +9,10 @@ class CoreApplication(object):
         super(CoreApplication, self).__init__()
         self._qApp = self._createQApplication()
 
-    @staticmethod
-    def getName():
-        return "MPG Helper"
+        self._applicationManager = None
+
+    def getApplicationManager(self):
+        return self._applicationManager
 
     @staticmethod
     def _createQApplication():
@@ -20,11 +21,7 @@ class CoreApplication(object):
         return QtCore.QCoreApplication()
 
     def initialize(self):
-        pass
+        self._applicationManager = ApplicationManager()
 
     def startApp(self):
         self._qApp.exec_()
-
-    @staticmethod
-    def convertMPGDataBaseFile(srcPath, desPath, champName, dayNumber):
-        converting.DataFileConverting.convertDataBaseFile(srcPath, desPath, champName, dayNumber)

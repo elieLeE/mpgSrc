@@ -124,3 +124,33 @@ class ConvertFileDialog(QtWidgets.QDialog):
 
     def getDayNumber(self):
         return self._comboBoxDayNumber.currentText()
+
+
+class NewLeagueDialog(QtWidgets.QDialog):
+    def __init__(self, parent):
+        super(NewLeagueDialog, self).__init__(parent)
+        self._nameLeagueEdit = None
+
+        self.setupUi()
+
+    def setupUi(self):
+        verticalLayout = QtWidgets.QVBoxLayout(self)
+        horizontalLayout = QtWidgets.QHBoxLayout()
+
+        label = QtWidgets.QLabel(self)
+        label.setText("name : ")
+        horizontalLayout.addWidget(label)
+
+        self._nameLeagueEdit = QtWidgets.QLineEdit(self)
+        horizontalLayout.addWidget(self._nameLeagueEdit)
+        verticalLayout.addLayout(horizontalLayout)
+
+        buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
+                                               parent=self)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+        verticalLayout.addWidget(buttonBox)
+
+    def getLeagueName(self):
+        return self._nameLeagueEdit.text()

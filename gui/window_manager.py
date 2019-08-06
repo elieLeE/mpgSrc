@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from PySide2 import QtWidgets
-from gui.dialogs import ConvertFileDialog
+from gui.dialogs import ConvertFileDialog, NewLeagueDialog
 
 
 class WindowManager(object):
@@ -19,8 +19,18 @@ class WindowManager(object):
         ret = dialog.exec_()
 
         if ret == QtWidgets.QDialog.Accepted:
-            self._application.convertMPGDataBaseFile(dialog.getSrcPath(), dialog.getDesPath(),
-                                                     dialog.getChampName(), dialog.getDayNumber())
+            self._application.getApplicationManager().convertMPGDataBaseFile(dialog.getSrcPath(), dialog.getDesPath(),
+                                                                             dialog.getChampName(), dialog.getDayNumber())
+
+        dialog.setParent(None)
+        dialog.deleteLater()
+
+    def createNewLeague(self):
+        dialog = NewLeagueDialog(self._mainWindow)
+        ret = dialog.exec_()
+
+        if ret == QtWidgets.QDialog.Accepted:
+            self._application.getApplicationManager().createNewLeague(dialog.getLeagueName())
 
         dialog.setParent(None)
         dialog.deleteLater()
