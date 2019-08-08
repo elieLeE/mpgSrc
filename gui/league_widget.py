@@ -19,11 +19,6 @@ class LeagueWidget(QtWidgets.QWidget):
     def setupUi(self):
         mainLayout = QtWidgets.QVBoxLayout(self)
 
-        toolbar = QtWidgets.QToolBar(self.tr("Tool bar"), self)
-        toolbar.setMovable(False)
-
-        mainLayout.addWidget(toolbar)
-
         tabWidget = QtWidgets.QTabWidget(self)
         self._mercatoWidget = MercatoWidget(self._leagueItem, self)
         tabWidget.addTab(self._mercatoWidget, "Mercato")
