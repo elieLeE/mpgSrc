@@ -20,4 +20,6 @@ class ApplicationManager(object):
         converting.DataFileConverting.convertDataBaseFile(srcPath, desPath, champName, dayNumber)
 
     def createNewLeague(self, leagueName):
-        self._leagues.append(League(leagueName))
+        newLeagueItem = League(leagueName)
+        self._leagues.append(newLeagueItem)
+        return newLeagueItem

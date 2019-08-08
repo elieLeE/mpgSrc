@@ -1,12 +1,23 @@
+# coding=utf-8
+
 from PySide2 import QtWidgets
+from gui.league_widget import LeagueWidget
 
 
 class CentralWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super(CentralWidget, self).__init__(parent)
 
+        self._tabWidget = None
+
         self.setupUi()
 
     def setupUi(self):
-        label = QtWidgets.QLabel(self)
-        label.setText("place holder")
+        mainLayout = QtWidgets.QVBoxLayout(self)
+
+        self._tabWidget = QtWidgets.QTabWidget(self)
+
+        mainLayout.addWidget(self._tabWidget)
+
+    def addWidget(self, coreItem):
+        self._tabWidget.addTab(LeagueWidget(coreItem, self), coreItem.getName())

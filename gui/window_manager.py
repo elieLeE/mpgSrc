@@ -30,7 +30,8 @@ class WindowManager(object):
         ret = dialog.exec_()
 
         if ret == QtWidgets.QDialog.Accepted:
-            self._application.getApplicationManager().createNewLeague(dialog.getLeagueName())
+            newLeagueItem = self._application.getApplicationManager().createNewLeague(dialog.getLeagueName())
+            self._mainWindow.addLeagueItem(newLeagueItem)
 
         dialog.setParent(None)
         dialog.deleteLater()

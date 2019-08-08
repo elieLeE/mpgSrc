@@ -27,4 +27,4 @@ class GuiApplication(application.CoreApplication):
     def initialize(self):
         super(GuiApplication, self).initialize()
         self._windowManager = window_manager.WindowManager(self)
-        self._windowManager.registerMainWindow(main_window.MainWindow(self))
+        # self._windowManager.registerMainWindow(main_window.MainWindow(self))

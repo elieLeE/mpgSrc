@@ -8,3 +8,6 @@ class League(object):
         self._leagueName = leagueName
         self._dataBase = None
         self._mercato = None
+
+    def getName(self):
+        return self._leagueName
