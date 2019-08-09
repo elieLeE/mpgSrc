@@ -4,8 +4,8 @@ import csv
 import re
 import xml.etree.cElementTree as xmlElt
 from core.defines import XML
-from core.players import Player
-from core.teams import Team
+from model.players import Player
+from model.teams import Team
 
 
 class FileReader(object):

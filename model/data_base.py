@@ -18,6 +18,9 @@ class DataBase(object):
     def getAllTeams(self):
         return self._teams.values()
 
+    def getAllPlayers(self):
+        return self._players.values()
+
     def addPlayer(self, playerInst):
         self._players[playerInst.getId()] = playerInst
 
@@ -27,3 +30,8 @@ class DataBase(object):
     def addTeam(self, teamInst):
         self._teams[teamInst.getId()] = teamInst
 
+    def clear(self):
+        self._players.clear()
+        self._teams.clear()
+        self._champName = ""
+        self._dayNumber = ""

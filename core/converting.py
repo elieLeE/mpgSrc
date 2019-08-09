@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import os
-from core.data_base import DataBase
+from model.data_base import DataBase
 from core import data_reader
 from core import data_writer
 

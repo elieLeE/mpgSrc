@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import unittest
-from core.data_base import DataBase
+from model.data_base import DataBase
 from core import data_reader
 from core.defines import Position
 
@@ -24,7 +24,7 @@ class TestReader(unittest.TestCase):
         player2 = "Girona_Ramalho Jonás"
         player2Data = dataBase._players.get(player2, None)
         self.assertTrue(player2Data is not None)
-        self.assertTrue(player2Data.getPosition() == Position.DEF_CENTRAL.value)
+        self.assertTrue(player2Data.getPosition() == Position.CENTRAL_DEFENDER.value)
 
         player3 = "Sevilla_Escudero Sergio"
         player3Data = dataBase._players.get(player3, None)
@@ -33,13 +33,13 @@ class TestReader(unittest.TestCase):
         self.assertTrue(player3Data.getTeam().getId() == "Sevilla")
         self.assertTrue(player3Data.getGoalNumber() == 0)
         self.assertTrue(player3Data.getEval() == 5.7)
-        self.assertTrue(player3Data.getPosition() == Position.DEF_LATERAL.value)
+        self.assertTrue(player3Data.getPosition() == Position.LATERAL_DEFENDER.value)
         self.assertTrue(player3Data.getPercentTit() == 47)
 
         player4 = "Alavés_Manu García"
         player4Data = dataBase._players.get(player4, None)
         self.assertTrue(player4Data is not None)
-        self.assertTrue(player4Data.getPosition() == Position.MILIEU_DEFENSIF.value)
+        self.assertTrue(player4Data.getPosition() == Position.MILIEU_DEFENSIVE.value)
 
         player5 = "Atlético_Koke"
         player5Data = dataBase._players.get(player5, None)
@@ -48,7 +48,7 @@ class TestReader(unittest.TestCase):
         self.assertTrue(player5Data.getTeam().getId() == "Atlético")
         self.assertTrue(player5Data.getGoalNumber() == 1)
         self.assertTrue(player5Data.getEval() == 5.2)
-        self.assertTrue(player5Data.getPosition() == Position.MILIEU_OFFENSIF.value)
+        self.assertTrue(player5Data.getPosition() == Position.MILIEU_OFFENSIVE.value)
         self.assertTrue(player5Data.getPercentTit() == 76)
 
         player6 = "Barcelona_Messi Lionel"
@@ -58,7 +58,7 @@ class TestReader(unittest.TestCase):
         self.assertTrue(player6Data.getTeam().getId() == "Barcelona")
         self.assertTrue(player6Data.getGoalNumber() == 15)
         self.assertTrue(player6Data.getEval() == 7)
-        self.assertTrue(player6Data.getPosition() == Position.ATTAQUANT.value)
+        self.assertTrue(player6Data.getPosition() == Position.STRIKER.value)
         self.assertTrue(player6Data.getPercentTit() == 82)
 
     def testDataBaseXMLFileReader(self):
@@ -79,7 +79,7 @@ class TestReader(unittest.TestCase):
         player2 = "Girona_Ramalho Jonás"
         player2Data = dataBase._players.get(player2, None)
         self.assertTrue(player2Data is not None)
-        self.assertTrue(player2Data.getPosition() == Position.DEF_CENTRAL.value)
+        self.assertTrue(player2Data.getPosition() == Position.CENTRAL_DEFENDER.value)
 
         player3 = "Sevilla_Escudero Sergio"
         player3Data = dataBase._players.get(player3, None)
@@ -88,13 +88,13 @@ class TestReader(unittest.TestCase):
         self.assertTrue(player3Data.getTeam().getId() == "Sevilla")
         self.assertTrue(player3Data.getGoalNumber() == 0)
         self.assertTrue(player3Data.getEval() == 5.7)
-        self.assertTrue(player3Data.getPosition() == Position.DEF_LATERAL.value)
+        self.assertTrue(player3Data.getPosition() == Position.LATERAL_DEFENDER.value)
         self.assertTrue(player3Data.getPercentTit() == 47)
 
         player4 = "Alavés_Manu García"
         player4Data = dataBase._players.get(player4, None)
         self.assertTrue(player4Data is not None)
-        self.assertTrue(player4Data.getPosition() == Position.MILIEU_DEFENSIF.value)
+        self.assertTrue(player4Data.getPosition() == Position.MILIEU_DEFENSIVE.value)
 
         player5 = "Atlético_Koke"
         player5Data = dataBase._players.get(player5, None)
@@ -103,7 +103,7 @@ class TestReader(unittest.TestCase):
         self.assertTrue(player5Data.getTeam().getId() == "Atlético")
         self.assertTrue(player5Data.getGoalNumber() == 1)
         self.assertTrue(player5Data.getEval() == 5.2)
-        self.assertTrue(player5Data.getPosition() == Position.MILIEU_OFFENSIF.value)
+        self.assertTrue(player5Data.getPosition() == Position.MILIEU_OFFENSIVE.value)
         self.assertTrue(player5Data.getPercentTit() == 76)
 
         player6 = "Barcelona_Messi Lionel"
@@ -113,7 +113,7 @@ class TestReader(unittest.TestCase):
         self.assertTrue(player6Data.getTeam().getId() == "Barcelona")
         self.assertTrue(player6Data.getGoalNumber() == 15)
         self.assertTrue(player6Data.getEval() == 7)
-        self.assertTrue(player6Data.getPosition() == Position.ATTAQUANT.value)
+        self.assertTrue(player6Data.getPosition() == Position.STRIKER.value)
         self.assertTrue(player6Data.getPercentTit() == 82)
 
 

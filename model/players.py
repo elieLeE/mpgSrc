@@ -1,30 +1,44 @@
+# coding=utf-8
+
+
 class Player(object):
-    def __init__(self, name, position, realTeamName, noteMoy, nbrGoals, price, percentageTit):
+    def __init__(self, _id, name, position, eval, goalNumber, prize, percentTit, teamInst=None):
+        self._id = _id
         self._name = name
-        self._pos = position
-        self._realTeamName = realTeamName
-        self._noteMoy = noteMoy
-        self._nbrGoals = nbrGoals
-        self._price = price
-        self._percentageTit = percentageTit
+        self._position = position
+        self._eval = eval
+        self._goalNumber = goalNumber
+        self._prize = prize
+        self._percentTit = percentTit
+
+        self._teamInst = None
+        if teamInst is not None:
+            self.setTeam(teamInst)
+
+    def getId(self):
+        return self._id
 
     def getName(self):
         return self._name
 
-    def getPos(self):
-        return self._pos
+    def getPosition(self):
+        return self._position
 
-    def getRealTeamName(self):
-        return self._realTeamName
+    def getTeam(self):
+        return self._teamInst
 
-    def getNoteMoy(self):
-        return self._noteMoy
+    def getEval(self):
+        return self._eval
 
-    def getNbrGoals(self):
-        return self._nbrGoals
+    def getGoalNumber(self):
+        return self._goalNumber
 
-    def getPrice(self):
-        return self._price
+    def getPrize(self):
+        return self._prize
 
-    def getPercentageTit(self):
-        return self._percentageTit
+    def getPercentTit(self):
+        return self._percentTit
+
+    def setTeam(self, teamInst):
+        self._teamInst = teamInst
+        teamInst.addPlayer(self)

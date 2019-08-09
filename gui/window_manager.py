@@ -13,6 +13,7 @@ class WindowManager(object):
 
     def registerMainWindow(self, mw):
         self._mainWindow = mw
+        self._addNewLeagueItem("aa")
 
     def convertMPGDataBase(self):
         dialog = ConvertFileDialog(self._mainWindow)
@@ -30,8 +31,11 @@ class WindowManager(object):
         ret = dialog.exec_()
 
         if ret == QtWidgets.QDialog.Accepted:
-            newLeagueItem = self._application.getApplicationManager().createNewLeague(dialog.getLeagueName())
-            self._mainWindow.addLeagueItem(newLeagueItem)
+            self._addNewLeagueItem(self._application.getApplicationManager().createNewLeague(dialog.getLeagueName()))
 
         dialog.setParent(None)
         dialog.deleteLater()
+
+    def _addNewLeagueItem(self, leagueName):
+        newLeagueItem = self._application.getApplicationManager().createNewLeague("aa")
+        self._mainWindow.addLeagueItem(newLeagueItem)

@@ -53,4 +53,4 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addToolBar(toolbar)
 
     def addLeagueItem(self, newLeagueItem):
-        self._centralWidget.addWidget(newLeagueItem)
+        self._centralWidget.addNewTabLeague(newLeagueItem, self._application.getApplicationManager())

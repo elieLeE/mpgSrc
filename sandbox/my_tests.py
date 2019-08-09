@@ -3,7 +3,7 @@
 from PySide2 import QtWidgets
 
 
-def test():
+def testQApp():
     app = QtWidgets.QApplication([])
 
     w = QtWidgets.QWidget()
@@ -14,8 +14,22 @@ def test():
     app.exec_()
 
 
+def testEnum():
+    from enum import Enum
+    class DataBaseTreeViewColumn(Enum):
+        NAME = 1, "Name"
+        POSITION = 2, "Poste"
+        TEAM = 3, "Equipe"
+        EVAL_MOY = 4, "Note Moy"
+        GAOL_NUMBER = 5, "Buts"
+        PRIZE = 6, "Cote"
+        PERCENT_TIT = 7, "Titulaire"
+
+    print(list(DataBaseTreeViewColumn))
+
+
 def main():
-    test()
+    testEnum()
 
 
 if __name__ == "__main__":

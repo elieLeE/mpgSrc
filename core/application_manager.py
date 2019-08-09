@@ -15,6 +15,9 @@ class ApplicationManager(object):
     def getName():
         return "MPG Helper"
 
+    def allActualDataBAse(self):
+        return self._databases
+
     @staticmethod
     def convertMPGDataBaseFile(srcPath, desPath, champName, dayNumber):
         converting.DataFileConverting.convertDataBaseFile(srcPath, desPath, champName, dayNumber)

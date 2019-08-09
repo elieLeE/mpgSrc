@@ -5,11 +5,23 @@ from enum import Enum
 
 class Position(Enum):
     GOAL = "Gardien"
-    DEF_CENTRAL = "Def. Cen."
-    DEF_LATERAL = "Def. Lat."
-    MILIEU_DEFENSIF = "Mil. Def."
-    MILIEU_OFFENSIF = "Mil. Off"
-    ATTAQUANT = "Attaquant"
+    DEFENDER = "Defenseur"
+    CENTRAL_DEFENDER = "Def. Cen."
+    LATERAL_DEFENDER = "Def. Lat."
+    MILIEU = "Milieu"
+    MILIEU_DEFENSIVE = "Mil. Def."
+    MILIEU_OFFENSIVE = "Mil. Off"
+    STRIKER = "Attaquant"
+
+    @staticmethod
+    def getGloBasPos(realPos):
+        if realPos == Position.GOAL:
+            return Position.GOAL
+        if realPos in [Position.CENTRAL_DEFENDER, Position.LATERAL_DEFENDER]:
+            return Position.DEFENDER
+        if realPos in [Position.MILIEU_DEFENSIVE, Position.MILIEU_OFFENSIVE]:
+            return Position.MILIEU
+        return Position.STRIKER
 
 
 class ChampName(Enum):

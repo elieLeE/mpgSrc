@@ -19,5 +19,5 @@ class CentralWidget(QtWidgets.QWidget):
 
         mainLayout.addWidget(self._tabWidget)
 
-    def addWidget(self, coreItem):
-        self._tabWidget.addTab(LeagueWidget(coreItem, self), coreItem.getName())
+    def addNewTabLeague(self, coreItem, applicationManager):
+        self._tabWidget.addTab(LeagueWidget(coreItem, applicationManager, self), coreItem.getName())

@@ -12,8 +12,8 @@ def main():
 
     mainWindow = main_window.MainWindow(app)
     app.getWindowManager().registerMainWindow(mainWindow)
-    # mainWindow.showMaximized()
-    mainWindow.show()
+    mainWindow.showMaximized()
+    # mainWindow.show()
     app.startApp()
 
 
