@@ -13,7 +13,6 @@ class MercatoWidget(QtWidgets.QWidget):
         self._viewDataBaseWidget = None
 
         self.setupUi()
-        self._chooseDataBase()
 
     def setupUi(self):
         mainLayout = QtWidgets.QVBoxLayout(self)
@@ -22,8 +21,8 @@ class MercatoWidget(QtWidgets.QWidget):
         toolbar.setStyleSheet("QToolBar {background-color: grey;}")
         toolbar.setMovable(False)
 
-        chooseDataBase = toolbar.addAction("Choose data base")
-        chooseDataBase.triggered.connect(self._chooseDataBase)
+        # chooseDataBase = toolbar.addAction("Choose data base")
+        # chooseDataBase.triggered.connect(self._chooseDataBase)
 
         addMercatoTurn = toolbar.addAction("Add mercato turn")
         addMercatoTurn.triggered.connect(self._addMercatoTurn)
@@ -37,9 +36,8 @@ class MercatoWidget(QtWidgets.QWidget):
         splitter.addWidget(TeamWidget(self))
         mainLayout.addWidget(splitter)
 
-    def _chooseDataBase(self):
-        self.parent().loadNewDataBase()
-        self._viewDataBaseWidget.updateWidget()
+    def update(self):
+        self._viewDataBaseWidget.updateWidget(self._leagueItem.getDataBase())
 
     def _addMercatoTurn(self):
         print("mercato turn")
@@ -60,8 +58,8 @@ class ViewDataBaseWidget(QtWidgets.QWidget):
         self._dataBaseTreeView = DataBaseTreeView(self._dataBaseInst, self)
         layout.addWidget(self._dataBaseTreeView)
 
-    def updateWidget(self):
-        self._dataBaseTreeView.updateTree()
+    def updateWidget(self, dataBaseInst):
+        self._dataBaseTreeView.updateTree(dataBaseInst)
 
 
 class DataBaseTreeViewColumn(Enum):
@@ -83,7 +81,9 @@ class DataBaseTreeView(QtWidgets.QTreeView):
         self._model = DataBaseTreeModel()
         self.setModel(self._model)
 
-    def updateTree(self):
+    def updateTree(self, dataBaseInst):
+        self._dataBaseInst = dataBaseInst
+
         self._model.clear()
         self._model.setHorizontalHeaderLabels([v.value[1] for v in list(DataBaseTreeViewColumn)])
 
@@ -91,8 +91,9 @@ class DataBaseTreeView(QtWidgets.QTreeView):
         self.update()
 
     def _populate(self):
-        for playerInst in self._dataBaseInst.getAllPlayers():
-            self._model.appendRow([PlayerItem(playerInst) for _ in list(DataBaseTreeViewColumn)])
+        if self._dataBaseInst is not None:
+            for playerInst in self._dataBaseInst.getAllPlayers():
+                self._model.appendRow([PlayerItem(playerInst) for _ in list(DataBaseTreeViewColumn)])
 
 
 class DataBaseTreeModel(QtGui.QStandardItemModel):

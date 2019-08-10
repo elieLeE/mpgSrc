@@ -5,8 +5,6 @@ from gui import main_window
 
 
 def main():
-    print("MPG")
-
     app = application.GuiApplication()
     app.initialize()
 

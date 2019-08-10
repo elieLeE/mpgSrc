@@ -26,16 +26,19 @@ class WindowManager(object):
         dialog.setParent(None)
         dialog.deleteLater()
 
+    def determineDayPerformances(self):
+        print("TO IMPLEMENT")
+
     def createNewLeague(self):
         dialog = NewLeagueDialog(self._mainWindow)
         ret = dialog.exec_()
 
         if ret == QtWidgets.QDialog.Accepted:
-            self._addNewLeagueItem(self._application.getApplicationManager().createNewLeague(dialog.getLeagueName()))
+            self._addNewLeagueItem(dialog.getLeagueName())
 
         dialog.setParent(None)
         dialog.deleteLater()
 
     def _addNewLeagueItem(self, leagueName):
-        newLeagueItem = self._application.getApplicationManager().createNewLeague("aa")
+        newLeagueItem = self._application.getApplicationManager().createNewLeague(leagueName)
         self._mainWindow.addLeagueItem(newLeagueItem)

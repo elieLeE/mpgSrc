@@ -1,7 +1,9 @@
 # coding=utf-8
 
+from core import data_reader
 from core import converting
 from model.league import League
+from model.data_base import DataBase
 
 
 class ApplicationManager(object):
@@ -26,3 +28,13 @@ class ApplicationManager(object):
         newLeagueItem = League(leagueName)
         self._leagues.append(newLeagueItem)
         return newLeagueItem
+
+    def loadDataBaseInLeague(self, leagueInst, dataBasePath):
+        dataBaseInst = self._databases.get(dataBasePath, None)
+        if dataBaseInst is not None:
+            leagueInst.setDataBase(dataBaseInst)
+        else:
+            dataBaseInst = DataBase("", "")
+            data_reader.MPGDataBaseCSVFileReader(dataBasePath).read(dataBaseInst)
+            leagueInst.setDataBase(dataBaseInst)
+            self._databases[dataBasePath] = dataBaseInst

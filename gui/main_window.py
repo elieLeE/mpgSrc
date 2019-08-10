@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from PySide2 import QtWidgets
+from PySide2 import QtWidgets, QtGui
 from gui.central_widget import CentralWidget
 
 
@@ -13,6 +13,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self._appExplorerDW = None
         self._leaguesExplorer = None
         self._centralWidget = None
+
+        self._newLeagueAction = None
+        self._loadLeagueAction = None
+
+        self._convertDataBaeAction = None
+        self._determineDayPerformances = None
 
         self.setupUi()
 
@@ -36,21 +42,45 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.logWindowDock)
         # self.logWindowDock.hide()
 
+        self.createActions()
+        self.createToolBar()
+        self.createMenus()
+
+    def createActions(self):
+        self._newLeagueAction = QtWidgets.QAction("Create new league")
+        self._newLeagueAction.triggered.connect(self._application.getWindowManager().createNewLeague)
+
+        self._loadLeagueAction = QtWidgets.QAction("Load league")
+        self._loadLeagueAction.setDisabled(True)
+
+        self._convertDataBaeAction = QtWidgets.QAction("Convert data base")
+        self._convertDataBaeAction.triggered.connect(self._application.getWindowManager().convertMPGDataBase)
+
+        self._determineDayPerformances = QtWidgets.QAction("Determine day performances")
+        self._determineDayPerformances.triggered.connect(self._application.getWindowManager().determineDayPerformances)
+
+    def createToolBar(self):
         toolbar = QtWidgets.QToolBar(self.tr("Tool bar"), self)
         toolbar.setMovable(False)
 
-        convertDataBaeAction = toolbar.addAction("Create new league")
-        convertDataBaeAction.triggered.connect(self._application.getWindowManager().createNewLeague)
-
-        loadLeagueAction = toolbar.addAction("Load league")
-        loadLeagueAction.setDisabled(True)
+        toolbar.addAction(self._newLeagueAction)
+        toolbar.addAction(self._loadLeagueAction)
 
         toolbar.addSeparator()
 
-        convertDataBaeAction = toolbar.addAction("Convert data base")
-        convertDataBaeAction.triggered.connect(self._application.getWindowManager().convertMPGDataBase)
+        toolbar.addAction(self._convertDataBaeAction)
+        toolbar.addAction(self._determineDayPerformances)
 
         self.addToolBar(toolbar)
+
+    def createMenus(self):
+        fileMenu = self.menuBar().addMenu("&Leagues")
+        fileMenu.addAction(self._newLeagueAction)
+        fileMenu.addAction(self._loadLeagueAction)
+
+        fileMenu = self.menuBar().addMenu("&Tools")
+        fileMenu.addAction(self._convertDataBaeAction)
+        fileMenu.addAction(self._determineDayPerformances)
 
     def addLeagueItem(self, newLeagueItem):
         self._centralWidget.addNewTabLeague(newLeagueItem, self._application.getApplicationManager())
