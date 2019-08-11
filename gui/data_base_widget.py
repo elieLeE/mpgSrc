@@ -57,7 +57,7 @@ class DataBaseTreeView(TreeView):
     def _populate(self):
         if self._dataBaseInst is not None:
             for playerInst in self._dataBaseInst.getAllPlayers():
-                self.model().appendRow(self._getNewPlayerItemsList(DataBasePlayerItem, playerInst))
+                self.model().appendRow(self._getNewItemsList(DataBasePlayerItem, playerInst))
 
 
 class DataBaseTreeModel(QtGui.QStandardItemModel):

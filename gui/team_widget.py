@@ -46,8 +46,8 @@ class TeamTreeViewColumn(Enum):
     NAME = 0, "Name"
     EVAL_MOY = 1, "Note Moy"
     GAOL_NUMBER = 2, "Buts"
-    PRIZE = 3, "Prix"
-    PERCENT_TIT = 4, "Titulaire"
+    PERCENT_TIT = 3, "Titulaire"
+    PRIZE = 4, "Prix"
 
 
 class TeamTreeView(TreeView):
@@ -61,28 +61,38 @@ class TeamTreeView(TreeView):
         self.expandAll()
 
     def _populate(self):
-        self.model().appendRow(self._getNewPlayerItemsList(TopLevelItem, Position.GOAL.value))
-        self.model().appendRow(self._getNewPlayerItemsList(TopLevelItem, Position.DEFENDER.value))
-        self.model().appendRow(self._getNewPlayerItemsList(TopLevelItem, Position.MILIEU.value))
-        self.model().appendRow(self._getNewPlayerItemsList(TopLevelItem, Position.STRIKER.value))
+        self.model().appendRow(self._getNewItemsList(TopLevelItem, Position.GOAL.value))
+        self.model().appendRow(self._getNewItemsList(TopLevelItem, Position.DEFENDER.value))
+        self.model().appendRow(self._getNewItemsList(TopLevelItem, Position.MILIEU.value))
+        self.model().appendRow(self._getNewItemsList(TopLevelItem, Position.STRIKER.value))
 
     def addNewPlayer(self, playerInst):
         globalPos = Position.getGloBasPos(playerInst.getPosition())
         topLevelItem = self.model().findItems(globalPos.value)
         if topLevelItem:
-            topLevelItem[0].appendRow(self._getNewPlayerItemsList(TeamPlayerItem, playerInst))
+            topLevelItem[0].appendRow(self._getNewPlayerItemsList(playerInst))
 
     def hasAlreadyPlayer(self, playerInst):
         return len(self.model().match(self.model().index(0, 0),
                                       UserRoles.ID_ROLE.value,
                                       playerInst.getId(),
                                       flags=QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)) == 1
+    
+    def _getNewPlayerItemsList(self, playerInst):
+        playerItemsList = self._getNewItemsList(TeamPlayerItem, playerInst)
+        for item in playerItemsList:
+            item.setEditable(False)
+        playerItemsList[TeamTreeViewColumn.PRIZE.value[0]].setEditable(True)
+        return playerItemsList
 
 
 class TeamPlayerItem(QtGui.QStandardItem):
     def __init__(self, playerDataInst):
         super(TeamPlayerItem, self).__init__()
         self._playerDataInst = playerDataInst
+
+        if self.column() != TeamTreeViewColumn.PRIZE.value:
+            self.setEditable(False)
 
     def data(self, role):
         if role == QtCore.Qt.DisplayRole:
@@ -92,10 +102,10 @@ class TeamPlayerItem(QtGui.QStandardItem):
                 return self._playerDataInst.getEval()
             if self.column() == TeamTreeViewColumn.GAOL_NUMBER.value[0]:
                 return self._playerDataInst.getGoalNumber()
-            if self.column() == TeamTreeViewColumn.PRIZE.value[0]:
-                return self._playerDataInst.getPrize()
             if self.column() == TeamTreeViewColumn.PERCENT_TIT.value[0]:
                 return "{} %".format(self._playerDataInst.getPercentTit())
+            if self.column() == TeamTreeViewColumn.PRIZE.value[0]:
+                return self._playerDataInst.getPrize()
         elif role == UserRoles.ID_ROLE.value:
             return self._playerDataInst.getId()
         return super(TeamPlayerItem, self).data(role)

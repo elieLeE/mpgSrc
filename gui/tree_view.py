@@ -11,7 +11,7 @@ class TreeView(QtWidgets.QTreeView):
     def _setHeader(self):
         self.model().setHorizontalHeaderLabels([v.value[1] for v in list(self._treeViewColumnEnum)])
 
-    def _getNewPlayerItemsList(self, playerItemClass, dataItem):
+    def _getNewItemsList(self, playerItemClass, dataItem):
         return [playerItemClass(dataItem) for _ in list(self._treeViewColumnEnum)]
 
     def clear(self):
