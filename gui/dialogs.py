@@ -108,7 +108,7 @@ class ConvertFileDialog(QtWidgets.QDialog):
         verticalLayout.addWidget(buttonBox)
 
     def _fillChampComboBox(self):
-        self._comboBoxChamp.addItems([v.value for _, v in ChampName.items()])
+        self._comboBoxChamp.addItems([v.value for v in list(ChampName)])
 
     def _fillDayNumberComboBox(self):
         self._comboBoxDayNumber.addItems([str(v) for v in range(1, 39)])

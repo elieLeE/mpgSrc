@@ -61,22 +61,22 @@ class TeamTreeView(TreeView):
         self.expandAll()
 
     def _populate(self):
-        self.model().appendRow(self._getNewItemsList(TopLevelItem, Position.GOAL.value))
-        self.model().appendRow(self._getNewItemsList(TopLevelItem, Position.DEFENDER.value))
-        self.model().appendRow(self._getNewItemsList(TopLevelItem, Position.MILIEU.value))
-        self.model().appendRow(self._getNewItemsList(TopLevelItem, Position.STRIKER.value))
+        self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.GOAL.value))
+        self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.DEFENDER.value))
+        self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.MILIEU.value))
+        self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.STRIKER.value))
 
     def addNewPlayer(self, playerInst):
         globalPos = Position.getGloBasPos(playerInst.getPosition())
-        topLevelItem = self.model().findItems(globalPos.value)
+        topLevelItem = self.sourceModel().findItems(globalPos.value)
         if topLevelItem:
             topLevelItem[0].appendRow(self._getNewPlayerItemsList(playerInst))
 
     def hasAlreadyPlayer(self, playerInst):
-        return len(self.model().match(self.model().index(0, 0),
-                                      UserRoles.ID_ROLE.value,
-                                      playerInst.getId(),
-                                      flags=QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)) == 1
+        return len(self.sourceModel().match(self.model().index(0, 0),
+                                            UserRoles.ID_ROLE.value,
+                                            playerInst.getId(),
+                                            flags=QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)) == 1
     
     def _getNewPlayerItemsList(self, playerInst):
         playerItemsList = self._getNewItemsList(TeamPlayerItem, playerInst)

@@ -28,8 +28,22 @@ def testEnum():
     print(list(DataBaseTreeViewColumn))
 
 
+def testRange():
+    l = list(range(10, 41, 10))
+
+    l = list(arange(4, 10, 0.5))
+    print(l)
+
+
+def testRegex():
+    import re
+    base = "diego"
+    testStr = "Lass"
+    print(re.search(base, testStr, re.IGNORECASE) is not None)
+
+
 def main():
-    testEnum()
+    testRegex()
 
 
 if __name__ == "__main__":
