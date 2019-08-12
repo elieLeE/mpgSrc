@@ -31,8 +31,11 @@ class MercatoWidget(QtWidgets.QWidget):
         splitter.setStyleSheet("QSplitter::handle {background-color: black;}")
         self._viewDataBaseWidget = ViewDataBaseWidget(self._leagueItem.getDataBase(), self)
         splitter.addWidget(self._viewDataBaseWidget)
-        splitter.addWidget(TeamWidget(self))
+        teamWidget = TeamWidget(self)
+        splitter.addWidget(teamWidget)
         mainLayout.addWidget(splitter)
+
+        teamWidget.newPlayerDropped.connect(self._viewDataBaseWidget.selectPlayerItem)
 
     def update(self):
         self._viewDataBaseWidget.updateWidget(self._leagueItem.getDataBase())

@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from PySide2 import QtWidgets, QtGui
+from PySide2 import QtWidgets, QtGui, QtCore
 
 
 class TreeView(QtWidgets.QTreeView):
@@ -20,6 +20,12 @@ class TreeView(QtWidgets.QTreeView):
     def _getNewItemsList(self, playerItemClass, dataItem):
         return [playerItemClass(dataItem) for _ in list(self._treeViewColumnEnum)]
 
+    def _getItems(self, role, v):
+        return self.model().match(self.model().index(0, 0), role, v,
+                                  flags=QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)
+
     def clear(self):
+        self.blockSignals(True)
         super(TreeView, self).clear()
         self._setHeader()
+        self.blockSignals(False)

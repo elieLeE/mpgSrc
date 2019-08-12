@@ -9,6 +9,8 @@ from gui.defines import MimeTypes, UserRoles
 
 
 class TeamWidget(QtWidgets.QWidget):
+    newPlayerDropped = QtCore.Signal(str)
+
     def __init__(self, parent):
         super(TeamWidget, self).__init__(parent)
 
@@ -36,7 +38,11 @@ class TeamWidget(QtWidgets.QWidget):
         mimeData = event.mimeData()
         if mimeData.hasFormat(MimeTypes.PLAYER.value):
             mimeData = pickle.loads(mimeData.data(MimeTypes.PLAYER.value).data())
-            self._teamTreeView.addNewPlayer(mimeData["playerData"])
+            playerData = mimeData["playerData"]
+            self._teamTreeView.addNewPlayer(playerData)
+
+            self.newPlayerDropped.emit(playerData.getId())
+
             event.accept()
             return
         event.ignore()
@@ -73,11 +79,8 @@ class TeamTreeView(TreeView):
             topLevelItem[0].appendRow(self._getNewPlayerItemsList(playerInst))
 
     def hasAlreadyPlayer(self, playerInst):
-        return len(self.sourceModel().match(self.model().index(0, 0),
-                                            UserRoles.ID_ROLE.value,
-                                            playerInst.getId(),
-                                            flags=QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)) == 1
-    
+        return len(self._getItems(UserRoles.ID_ROLE.value, playerInst.getId())) == 1
+
     def _getNewPlayerItemsList(self, playerInst):
         playerItemsList = self._getNewItemsList(TeamPlayerItem, playerInst)
         for item in playerItemsList:

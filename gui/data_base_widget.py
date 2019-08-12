@@ -1,4 +1,5 @@
 # coding=utf-8
+from builtins import super
 
 from PySide2 import QtWidgets, QtCore, QtGui
 import re
@@ -6,7 +7,7 @@ from enum import Enum
 import pickle
 from core.defines import Position
 from gui.tree_view import TreeView
-from gui.defines import MimeTypes
+from gui.defines import MimeTypes, UserRoles
 
 
 class Filters(Enum):
@@ -56,12 +57,15 @@ class ViewDataBaseWidget(QtWidgets.QWidget):
         self._dataBaseTreeView = DataBaseTreeView(self._dataBaseInst, self._dictFilters, self)
         layout.addWidget(self._dataBaseTreeView)
 
-        self._filterWidget.filterChanged.connect(self._dataBaseTreeView.update)
+        self._filterWidget.filterChanged.connect(self._dataBaseTreeView.updateFiltering)
 
     def updateWidget(self, dataBaseInst):
         self._dataBaseInst = dataBaseInst
         self._filterWidget.updateWidget(dataBaseInst)
         self._dataBaseTreeView.updateTree(dataBaseInst)
+
+    def selectPlayerItem(self, playerId):
+        self._dataBaseTreeView.selectPlayerItem(playerId)
 
 
 class FilterWidget(QtWidgets.QWidget):
@@ -211,17 +215,6 @@ class DataBaseTreeView(TreeView):
 
         self.setDragEnabled(True)
 
-    def updateTree(self, dataBaseInst):
-        self._dataBaseInst = dataBaseInst
-
-        self.sourceModel().clear()
-
-        self._populate()
-        self.update()
-        
-    def update(self):
-        self.sourceModel().layoutChanged.emit()
-
     def _populate(self):
         if self._dataBaseInst is not None:
             for playerInst in self._dataBaseInst.getAllPlayers():
@@ -232,16 +225,44 @@ class DataBaseTreeView(TreeView):
         playerItemsList[DataBaseTreeViewColumn.SELECTION.value[0]].setCheckable(True)
         return playerItemsList
 
+    def updateTree(self, dataBaseInst):
+        self._dataBaseInst = dataBaseInst
+
+        self.sourceModel().clear()
+
+        self._populate()
+        self.refresh()
+
+    def updateFiltering(self):
+        self.model().applyFilters()
+        self.refresh()
+
+    def refresh(self):
+        self.viewport().update()
+
+    def selectPlayerItem(self, playerId):
+        itemsIndex = self._getItems(UserRoles.ID_ROLE.value, playerId)
+        if len(itemsIndex) == 1:
+            sourceIndex = self.model().mapToSource(itemsIndex[0])
+            playerItem = self.sourceModel().itemFromIndex(sourceIndex)
+            if playerItem is not None:
+                playerItem.selectItem()
+
 
 class DataBaseTreeSortFilterModel(QtCore.QSortFilterProxyModel):
     def __init__(self, dictFilters):
         super(DataBaseTreeSortFilterModel, self).__init__()
         self._dictFilters = dictFilters
 
+        self.setDynamicSortFilter(True)
+
+    def applyFilters(self):
+        self.invalidateFilter()
+
     def filterAcceptsRow(self, sourceRow, sourceParent):
-        parent = self.mapToSource(sourceParent)
-        index = self.sourceModel().index(sourceRow, 0, parent)
-        playerItem = self.sourceModel().itemFromIndex(index)
+        sourceParent = self.mapToSource(sourceParent)
+        indexItem = self.sourceModel().index(sourceRow, 0, sourceParent)
+        playerItem = self.sourceModel().itemFromIndex(indexItem)
 
         if playerItem is None:
             return True
@@ -284,18 +305,18 @@ class DataBaseTreeSortFilterModel(QtCore.QSortFilterProxyModel):
 
         return True
 
-
-class DataBaseTreeModel(QtGui.QStandardItemModel):
-    def __init__(self):
-        super(DataBaseTreeModel, self).__init__()
-        self._setHeader()
-
     def data(self, index, role):
         if role == QtCore.Qt.BackgroundRole:
             if index.row() % 2 == 0:
                 return QtGui.QColor(226, 237, 253)
             return QtCore.Qt.white
-        return super(DataBaseTreeModel, self).data(index, role)
+        return super(DataBaseTreeSortFilterModel, self).data(index, role)
+
+
+class DataBaseTreeModel(QtGui.QStandardItemModel):
+    def __init__(self):
+        super(DataBaseTreeModel, self).__init__()
+        self._setHeader()
 
     def _setHeader(self):
         self.setHorizontalHeaderLabels([v.value[1] for v in list(DataBaseTreeViewColumn)])
@@ -324,7 +345,6 @@ class DataBasePlayerItem(QtGui.QStandardItem):
         self._playerDataInst = playerDataInst
 
         self.setEditable(False)
-        self._selectStatus = True
 
     def data(self, role):
         if role == QtCore.Qt.DisplayRole:
@@ -342,16 +362,16 @@ class DataBasePlayerItem(QtGui.QStandardItem):
                 return self._playerDataInst.getPrize()
             if self.column() == DataBaseTreeViewColumn.PERCENT_TIT.value[0]:
                 return "{} %".format(self._playerDataInst.getPercentTit())
+        elif role == UserRoles.ID_ROLE.value:
+            return self._playerDataInst.getId()
+
         return super(DataBasePlayerItem, self).data(role)
-
-    def setData(self, val, role):
-        if role == QtCore.Qt.CheckStateRole:
-            self._selectStatus = not self._selectStatus
-
-        return super(DataBasePlayerItem, self).setData(val, role)
 
     def getPlayerData(self):
         return self._playerDataInst
 
+    def selectItem(self):
+        self.setCheckState(QtCore.Qt.Checked)
+
     def getSelectStatus(self):
-        return self._selectStatus
+        return self.data(QtCore.Qt.CheckStateRole)
