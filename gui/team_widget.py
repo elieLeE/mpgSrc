@@ -1,4 +1,5 @@
 # coding=utf-8
+from builtins import super
 
 from PySide2 import QtWidgets, QtCore, QtGui
 from enum import Enum
@@ -50,10 +51,11 @@ class TeamWidget(QtWidgets.QWidget):
 
 class TeamTreeViewColumn(Enum):
     NAME = 0, "Name"
-    EVAL_MOY = 1, "Note Moy"
-    GAOL_NUMBER = 2, "Buts"
-    PERCENT_TIT = 3, "Titulaire"
-    PRIZE = 4, "Prix"
+    EVAL_MOY = NAME[0] + 1, "Note Moy"
+    GAOL_NUMBER = EVAL_MOY[0] + 1, "Buts"
+    PERCENT_TIT = GAOL_NUMBER[0] + 1, "Titulaire"
+    PRIZE = PERCENT_TIT[0] + 1, "Prix"
+    CLOSE = PRIZE[0] + 1, "Close"
 
 
 class TeamTreeView(TreeView):
@@ -63,8 +65,15 @@ class TeamTreeView(TreeView):
         self.setModel(QtGui.QStandardItemModel())
         self._setHeader()
 
+        closeButtonDelegate = CloseButtonTreeViewDelegate()
+        self.setItemDelegateForColumn(TeamTreeViewColumn.CLOSE.value[0], closeButtonDelegate)
+        closeButtonDelegate.buttonClicked.connect(self.buttonClicked)
+
         self._populate()
         self.expandAll()
+
+    def buttonClicked(self, indexItem):
+        self.model().removeRow(indexItem.row(), indexItem.parent())
 
     def _populate(self):
         self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.GOAL.value))
@@ -74,7 +83,7 @@ class TeamTreeView(TreeView):
 
     def addNewPlayer(self, playerInst):
         globalPos = Position.getGloBasPos(playerInst.getPosition())
-        topLevelItem = self.sourceModel().findItems(globalPos.value)
+        topLevelItem = self.sourceModel().findItems(globalPos.value, column=TeamTreeViewColumn.NAME.value[0])
         if topLevelItem:
             topLevelItem[0].appendRow(self._getNewPlayerItemsList(playerInst))
 
@@ -87,6 +96,59 @@ class TeamTreeView(TreeView):
             item.setEditable(False)
         playerItemsList[TeamTreeViewColumn.PRIZE.value[0]].setEditable(True)
         return playerItemsList
+
+
+class CloseButtonTreeViewDelegate(QtWidgets.QStyledItemDelegate):
+    buttonClicked = QtCore.Signal(QtCore.QModelIndex)
+
+    _state = QtWidgets.QStyle.State_Enabled
+
+    def __init__(self):
+        super(CloseButtonTreeViewDelegate, self).__init__()
+
+    def paint(self, painter, option, index):
+        if not index.parent().isValid():
+            return
+
+        text = "Delete"
+        rect = option.rect
+
+        textRect = QtCore.QRect(rect)
+        textRect.setHeight(15)
+        painter.drawText(textRect, text)
+
+        buttonRect = QtCore.QRect(rect)
+        buttonRect.setY(textRect.y())
+        buttonRect.setHeight(15)
+
+        button = QtWidgets.QStyleOptionButton()
+        button.rect = buttonRect
+        button.text = text
+        button.state = CloseButtonTreeViewDelegate._state | QtWidgets.QStyle.State_Enabled
+
+        QtWidgets.QApplication.style().drawControl(QtWidgets.QStyle.CE_PushButton, button, painter)
+
+    def editorEvent(self, event, model, option, index):
+        if event.type() != QtCore.QEvent.MouseButtonPress and event.type() != QtCore.QEvent.MouseButtonRelease:
+            # ignore
+            CloseButtonTreeViewDelegate._state = QtWidgets.QStyle.State_Raised
+            return True
+
+        buttonRect = QtCore.QRect(option.rect)
+        buttonRect.setY(option.rect.y())
+        buttonRect.setHeight(15)
+
+        if not buttonRect.contains(event.pos()):
+            CloseButtonTreeViewDelegate._state = QtWidgets.QStyle.State_Raised
+            return True
+
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            CloseButtonTreeViewDelegate._state = QtWidgets.QStyle.State_Sunken
+        elif event.type() == QtCore.QEvent.MouseButtonRelease:
+            CloseButtonTreeViewDelegate._state = QtWidgets.QStyle.State_Raised
+            self.buttonClicked.emit(index)
+
+        return True
 
 
 class TeamPlayerItem(QtGui.QStandardItem):
@@ -122,6 +184,6 @@ class TopLevelItem(QtGui.QStandardItem):
 
     def data(self, role: int = ...):
         if role == QtCore.Qt.DisplayRole:
-            if self.column() == 0:
+            if self.column() == TeamTreeViewColumn.NAME.value[0]:
                 return self._topLevelName
         return super(TopLevelItem, self).data(role)

@@ -237,9 +237,6 @@ class DataBaseTreeView(TreeView):
         self.model().applyFilters()
         self.refresh()
 
-    def refresh(self):
-        self.viewport().update()
-
     def selectPlayerItem(self, playerId):
         itemsIndex = self._getItems(UserRoles.ID_ROLE.value, playerId)
         if len(itemsIndex) == 1:

@@ -24,6 +24,9 @@ class TreeView(QtWidgets.QTreeView):
         return self.model().match(self.model().index(0, 0), role, v,
                                   flags=QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)
 
+    def refresh(self):
+        self.viewport().update()
+
     def clear(self):
         self.blockSignals(True)
         super(TreeView, self).clear()
