@@ -2,13 +2,14 @@
 
 
 class Player(object):
-    def __init__(self, _id, name, position, eval, goalNumber, prize, percentTit, teamInst=None):
+    def __init__(self, _id, name, position, eval, goalNumber, officialPrize, buyPrize, percentTit, teamInst=None):
         self._id = _id
         self._name = name
         self._position = position
         self._eval = eval
         self._goalNumber = goalNumber
-        self._prize = prize
+        self._offPrize = officialPrize
+        self._buyPrize = buyPrize
         self._percentTit = percentTit
 
         self._teamInst = None
@@ -33,8 +34,11 @@ class Player(object):
     def getGoalNumber(self):
         return self._goalNumber
 
-    def getPrize(self):
-        return self._prize
+    def getOffPrize(self):
+        return self._offPrize
+
+    def getBuyPrize(self):
+        return self._buyPrize
 
     def getPercentTit(self):
         return self._percentTit

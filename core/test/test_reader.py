@@ -29,7 +29,7 @@ class TestReader(unittest.TestCase):
         player3 = "Sevilla_Escudero Sergio"
         player3Data = dataBase._players.get(player3, None)
         self.assertTrue(player3Data is not None)
-        self.assertTrue(player3Data.getPrize() == 11)
+        self.assertTrue(player3Data.getOffPrize() == 11)
         self.assertTrue(player3Data.getTeam().getId() == "Sevilla")
         self.assertTrue(player3Data.getGoalNumber() == 0)
         self.assertTrue(player3Data.getEval() == 5.7)
@@ -44,7 +44,7 @@ class TestReader(unittest.TestCase):
         player5 = "Atlético_Koke"
         player5Data = dataBase._players.get(player5, None)
         self.assertTrue(player5Data is not None)
-        self.assertTrue(player5Data.getPrize() == 20)
+        self.assertTrue(player5Data.getOffPrize() == 20)
         self.assertTrue(player5Data.getTeam().getId() == "Atlético")
         self.assertTrue(player5Data.getGoalNumber() == 1)
         self.assertTrue(player5Data.getEval() == 5.2)
@@ -54,7 +54,7 @@ class TestReader(unittest.TestCase):
         player6 = "Barcelona_Messi Lionel"
         player6Data = dataBase._players.get(player6, None)
         self.assertTrue(player6Data is not None)
-        self.assertTrue(player6Data.getPrize() == 55)
+        self.assertTrue(player6Data.getOffPrize() == 55)
         self.assertTrue(player6Data.getTeam().getId() == "Barcelona")
         self.assertTrue(player6Data.getGoalNumber() == 15)
         self.assertTrue(player6Data.getEval() == 7)
@@ -84,7 +84,7 @@ class TestReader(unittest.TestCase):
         player3 = "Sevilla_Escudero Sergio"
         player3Data = dataBase._players.get(player3, None)
         self.assertTrue(player3Data is not None)
-        self.assertTrue(player3Data.getPrize() == 11)
+        self.assertTrue(player3Data.getOffPrize() == 11)
         self.assertTrue(player3Data.getTeam().getId() == "Sevilla")
         self.assertTrue(player3Data.getGoalNumber() == 0)
         self.assertTrue(player3Data.getEval() == 5.7)
@@ -99,7 +99,7 @@ class TestReader(unittest.TestCase):
         player5 = "Atlético_Koke"
         player5Data = dataBase._players.get(player5, None)
         self.assertTrue(player5Data is not None)
-        self.assertTrue(player5Data.getPrize() == 20)
+        self.assertTrue(player5Data.getOffPrize() == 20)
         self.assertTrue(player5Data.getTeam().getId() == "Atlético")
         self.assertTrue(player5Data.getGoalNumber() == 1)
         self.assertTrue(player5Data.getEval() == 5.2)
@@ -109,7 +109,7 @@ class TestReader(unittest.TestCase):
         player6 = "Barcelona_Messi Lionel"
         player6Data = dataBase._players.get(player6, None)
         self.assertTrue(player6Data is not None)
-        self.assertTrue(player6Data.getPrize() == 55)
+        self.assertTrue(player6Data.getOffPrize() == 55)
         self.assertTrue(player6Data.getTeam().getId() == "Barcelona")
         self.assertTrue(player6Data.getGoalNumber() == 15)
         self.assertTrue(player6Data.getEval() == 7)

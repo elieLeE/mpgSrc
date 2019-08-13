@@ -285,7 +285,7 @@ class DataBaseTreeSortFilterModel(QtCore.QSortFilterProxyModel):
             return False
 
         prizeFilter = int(self._dictFilters[Filters.PRIZE.value])
-        if prizeFilter != -1 and playerData.getPrize() > prizeFilter:
+        if prizeFilter != -1 and playerData.getOffPrize() > prizeFilter:
             return False
 
         evalFilter = int(self._dictFilters[Filters.EVAL.value])
@@ -356,7 +356,7 @@ class DataBasePlayerItem(QtGui.QStandardItem):
             if self.column() == DataBaseTreeViewColumn.GAOL_NUMBER.value[0]:
                 return self._playerDataInst.getGoalNumber()
             if self.column() == DataBaseTreeViewColumn.PRIZE.value[0]:
-                return self._playerDataInst.getPrize()
+                return self._playerDataInst.getOffPrize()
             if self.column() == DataBaseTreeViewColumn.PERCENT_TIT.value[0]:
                 return "{} %".format(self._playerDataInst.getPercentTit())
         elif role == UserRoles.ID_ROLE.value:

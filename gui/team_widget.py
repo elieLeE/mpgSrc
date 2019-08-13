@@ -4,7 +4,8 @@ from builtins import super
 from PySide2 import QtWidgets, QtCore, QtGui
 from enum import Enum
 import pickle
-from core.defines import Position
+from core.defines import Position, MAX_SUM_PRIZE_TEAM
+from model.players import Player
 from gui.tree_view import TreeView
 from gui.defines import MimeTypes, UserRoles
 
@@ -15,13 +16,35 @@ class TeamWidget(QtWidgets.QWidget):
     def __init__(self, parent):
         super(TeamWidget, self).__init__(parent)
 
+        self._playersDict = {}   # temporary. take team of league !
+
+        self._totalPrizeEdit = None
         self._teamTreeView = None
         self.setupUi()
 
         self.setAcceptDrops(True)
 
+        self._updateTotal(None)
+
+        self._teamTreeView.teamChanged.connect(self._updateTotal)
+
     def setupUi(self):
         layout = QtWidgets.QVBoxLayout(self)
+
+        horizontalLayout = QtWidgets.QHBoxLayout()
+        totalPrizeLabel = QtWidgets.QLabel(self)
+        totalPrizeLabel.setText("Total")
+        horizontalLayout.addWidget(totalPrizeLabel)
+
+        self._totalPrizeEdit = QtWidgets.QLineEdit(self)
+        self._totalPrizeEdit.setReadOnly(True)
+        self._totalPrizeEdit.setFixedWidth(80)
+        horizontalLayout.addWidget(self._totalPrizeEdit)
+
+        spacerItem = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        horizontalLayout.addItem(spacerItem)
+
+        layout.addLayout(horizontalLayout)
 
         self._teamTreeView = TeamTreeView(self)
         layout.addWidget(self._teamTreeView)
@@ -48,6 +71,23 @@ class TeamWidget(QtWidgets.QWidget):
             return
         event.ignore()
 
+    def _updateTotal(self, playerInst):
+        if playerInst is not None:
+            if playerInst.getId() not in self._playersDict:
+                self._playersDict[playerInst.getId()] = playerInst
+            else:
+                del self._playersDict[playerInst.getId()]
+
+        newSum = 0
+        for playerInst in self._playersDict.values():
+            newSum += playerInst.getBuyPrize()
+        self._totalPrizeEdit.setText(str(newSum))
+
+        if newSum > MAX_SUM_PRIZE_TEAM:
+            self._totalPrizeEdit.setStyleSheet("color: red;")
+        else:
+            self._totalPrizeEdit.setStyleSheet("color: black;")
+
 
 class TeamTreeViewColumn(Enum):
     NAME = 0, "Name"
@@ -59,6 +99,8 @@ class TeamTreeViewColumn(Enum):
 
 
 class TeamTreeView(TreeView):
+    teamChanged = QtCore.Signal(Player)
+
     def __init__(self, parent):
         super(TeamTreeView, self).__init__(TeamTreeViewColumn, parent)
 
@@ -67,13 +109,13 @@ class TeamTreeView(TreeView):
 
         closeButtonDelegate = CloseButtonTreeViewDelegate()
         self.setItemDelegateForColumn(TeamTreeViewColumn.CLOSE.value[0], closeButtonDelegate)
-        closeButtonDelegate.buttonClicked.connect(self.buttonClicked)
+        closeButtonDelegate.buttonClicked.connect(self.removePlayer)
 
         self._populate()
         self.expandAll()
 
-    def buttonClicked(self, indexItem):
-        self.model().removeRow(indexItem.row(), indexItem.parent())
+    def _determineNewSum(self):
+        pass
 
     def _populate(self):
         self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.GOAL.value))
@@ -86,6 +128,7 @@ class TeamTreeView(TreeView):
         topLevelItem = self.sourceModel().findItems(globalPos.value, column=TeamTreeViewColumn.NAME.value[0])
         if topLevelItem:
             topLevelItem[0].appendRow(self._getNewPlayerItemsList(playerInst))
+            self.teamChanged.emit(playerInst)
 
     def hasAlreadyPlayer(self, playerInst):
         return len(self._getItems(UserRoles.ID_ROLE.value, playerInst.getId())) == 1
@@ -96,6 +139,13 @@ class TeamTreeView(TreeView):
             item.setEditable(False)
         playerItemsList[TeamTreeViewColumn.PRIZE.value[0]].setEditable(True)
         return playerItemsList
+
+    def removePlayer(self, indexItem):
+        playerItem = self.model().itemFromIndex(indexItem)
+        if playerItem is not None:
+            playerInst = playerItem.getPlayerInst()
+            self.teamChanged.emit(playerInst)
+        self.model().removeRow(indexItem.row(), indexItem.parent())
 
 
 class CloseButtonTreeViewDelegate(QtWidgets.QStyledItemDelegate):
@@ -170,10 +220,13 @@ class TeamPlayerItem(QtGui.QStandardItem):
             if self.column() == TeamTreeViewColumn.PERCENT_TIT.value[0]:
                 return "{} %".format(self._playerDataInst.getPercentTit())
             if self.column() == TeamTreeViewColumn.PRIZE.value[0]:
-                return self._playerDataInst.getPrize()
+                return self._playerDataInst.getOffPrize()
         elif role == UserRoles.ID_ROLE.value:
             return self._playerDataInst.getId()
         return super(TeamPlayerItem, self).data(role)
+
+    def getPlayerInst(self):
+        return self._playerDataInst
 
 
 class TopLevelItem(QtGui.QStandardItem):

@@ -31,7 +31,7 @@ class MPGDataBaseCSVFileReader(FileReader):
                     idPlayer = "{}_{}".format(idTeam, playerName)
                     eval = float(eval.replace(",", "."))
                     percentTit = float(re.sub(r"\s*%", "", percentTit).replace(",", "."))
-                    playersList.append(Player(idPlayer, playerName, pos, eval, int(gaolNumber), int(prize), percentTit))
+                    playersList.append(Player(idPlayer, playerName, pos, eval, int(gaolNumber), int(prize), int(prize), percentTit))
 
             for idTeam, playersList in teamsPlayers.items():
                 newTeam = Team(idTeam)
@@ -55,12 +55,13 @@ class MPGDataBaseXMLFileReader(FileReader):
                 dataBaseInst.addTeam(newTeam)
 
                 for playerElt in teamElt.iter(XML.ATTR_PLAYER):
-                    playerId = playerElt.get('id')
-                    playerName = playerElt.get('name')
-                    pos = playerElt.get('pos')
-                    eval = float(playerElt.get('eval'))
-                    goalNumber = int(playerElt.get('goalNumber'))
-                    prize = int(playerElt.get('prize'))
-                    percentTit = float(playerElt.get('percentTit'))
-                    dataBaseInst.addPlayer(Player(playerId, playerName, pos, eval,
-                                                  goalNumber, prize, percentTit, newTeam))
+                    playerId = playerElt.get(XML.TAG_ID)
+                    playerName = playerElt.get(XML.TAG_NAME)
+                    pos = playerElt.get(XML.TAG_POSITION)
+                    evalMoy = float(playerElt.get(XML.TAG_EVAL))
+                    goalNumber = int(playerElt.get(XML.TAG_GOAL_NUMBER))
+                    offPrize = int(playerElt.get(XML.TAG_PRIZE))
+                    buyPrize = int(playerElt.get(XML.TAG_BUY_PRIZE, offPrize))
+                    percentTit = float(playerElt.get(XML.TAG_PERCENT_TIT))
+                    dataBaseInst.addPlayer(Player(playerId, playerName, pos, evalMoy, goalNumber,
+                                                  offPrize, buyPrize, percentTit, newTeam))

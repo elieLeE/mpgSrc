@@ -31,7 +31,7 @@ class GlobalDataBaseFileWriter(FileWriter):
                                                              XML.TAG_POSITION: playerInst.getPosition(),
                                                              XML.TAG_EVAL: str(playerInst.getEval()),
                                                              XML.TAG_GOAL_NUMBER: str(playerInst.getGoalNumber()),
-                                                             XML.TAG_PRIZE: str(playerInst.getPrize()),
+                                                             XML.TAG_PRIZE: str(playerInst.getOffPrize()),
                                                              XML.TAG_PERCENT_TIT: str(playerInst.getPercentTit())})
 
         tree = xmlElt.ElementTree(root)

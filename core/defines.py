@@ -3,6 +3,9 @@
 from enum import Enum
 
 
+MAX_SUM_PRIZE_TEAM = 500
+
+
 class Position(Enum):
     GOAL = "Gardien"
     DEFENDER = "Defenseur"
@@ -50,6 +53,7 @@ class XML(object):
     TAG_EVAL = "eval"
     TAG_GOAL_NUMBER = "goalNumber"
     TAG_PRIZE = "prize"
+    TAG_BUY_PRIZE = "buyPrize"
     TAG_PERCENT_TIT = "percentTit"
 
 
