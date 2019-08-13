@@ -19,6 +19,7 @@ class Filters(Enum):
     TIT = "Tit"
     GOALS = "Goals"
     SELECTION = "Select"
+    ACTIVE = "Active"
 
     @staticmethod
     def getDefaultVal(filterVal):
@@ -26,7 +27,9 @@ class Filters(Enum):
             return ""
         if filterVal in [Filters.PRIZE.value, Filters.EVAL.value, Filters.TIT.value, Filters.GOALS.value]:
             return -1
-        return False
+        elif filterVal == Filters.SELECTION.value:
+            return False
+        return True
 
 
 class ViewDataBaseWidget(QtWidgets.QWidget):
@@ -34,14 +37,7 @@ class ViewDataBaseWidget(QtWidgets.QWidget):
         super(ViewDataBaseWidget, self).__init__(parent)
         self._dataBaseInst = dataBaseInst
 
-        self._dictFilters = {Filters.NAME.value: Filters.getDefaultVal(Filters.NAME.value),
-                             Filters.POSITION.value: Filters.getDefaultVal(Filters.POSITION.value),
-                             Filters.TEAMS.value: Filters.getDefaultVal(Filters.TEAMS.value),
-                             Filters.PRIZE.value: Filters.getDefaultVal(Filters.PRIZE.value),
-                             Filters.EVAL.value: Filters.getDefaultVal(Filters.EVAL.value),
-                             Filters.TIT.value: Filters.getDefaultVal(Filters.TIT.value),
-                             Filters.GOALS.value: Filters.getDefaultVal(Filters.GOALS.value),
-                             Filters.SELECTION.value: Filters.getDefaultVal(Filters.SELECTION.value)}
+        self._dictFilters = {f.value: Filters.getDefaultVal(f.value) for f in list(Filters)}
 
         self._filterWidget = None
         self._dataBaseTreeView = None
@@ -78,6 +74,7 @@ class FilterWidget(QtWidgets.QWidget):
 
         self._playerNameEdit = None
         self._selectionCheckBox = None
+        self._activeFiltersCheckBox = None
         self._teamComboBox = None
         self._posComboBox = None
         self._prizeComboBox = None
@@ -98,28 +95,21 @@ class FilterWidget(QtWidgets.QWidget):
         self._playerNameEdit.textChanged.connect(self._playerNameEditChanged)
         horizontalLayout.addWidget(self._playerNameEdit)
 
+        horizontalLayout2 = QtWidgets.QHBoxLayout()
+
         self._teamComboBox = QtWidgets.QComboBox(self)
         self._teamComboBox.currentIndexChanged.connect(lambda: self._comboBoxChanged(self._teamComboBox,
                                                                                      Filters.TEAMS.value))
         # self._teamComboBox.setStyleSheet("color: rgb(160, 160, 164);")
         # self._teamComboBox.setStyleSheet("QComboBox { background-color: white; color: rgb(160, 160, 164) }" "QListView { color: black; }")
         # self._teamComboBox.setStyleSheet("QComboBox { combobox-popup: 0; color: white; padding: 0px 0px 0px 0px}")
-        horizontalLayout.addWidget(self._teamComboBox)
+        horizontalLayout2.addWidget(self._teamComboBox)
 
         self._posComboBox = QtWidgets.QComboBox(self)
         self._posComboBox.currentIndexChanged.connect(lambda: self._comboBoxChanged(self._posComboBox,
                                                                                     Filters.POSITION.value))
         # self._posComboBox.setStyleSheet("color: rgb(160, 160, 164);")
-        horizontalLayout.addWidget(self._posComboBox)
-
-        label = QtWidgets.QLabel(self)
-        label.setText("Selection")
-        horizontalLayout.addWidget(label)
-        self._selectionCheckBox = QtWidgets.QCheckBox(self)
-        self._selectionCheckBox.stateChanged.connect(self._selectionCheckBoxChanged)
-        horizontalLayout.addWidget(self._selectionCheckBox)
-
-        horizontalLayout2 = QtWidgets.QHBoxLayout()
+        horizontalLayout2.addWidget(self._posComboBox)
 
         self._prizeComboBox = QtWidgets.QComboBox(self)
         self._prizeComboBox.currentIndexChanged.connect(lambda: self._comboBoxChanged(self._prizeComboBox,
@@ -145,8 +135,31 @@ class FilterWidget(QtWidgets.QWidget):
         # self._goalsNumberComboBox.setStyleSheet("color: rgb(160, 160, 164);")
         horizontalLayout2.addWidget(self._goalsNumberComboBox)
 
+        horizontalLayout3 = QtWidgets.QHBoxLayout()
+
+        label = QtWidgets.QLabel(self)
+        label.setText("Selection")
+        horizontalLayout3.addWidget(label)
+        self._selectionCheckBox = QtWidgets.QCheckBox(self)
+        self._selectionCheckBox.stateChanged.connect(lambda: self._checkBoxChanged(self._selectionCheckBox,
+                                                                                   Filters.SELECTION.value))
+        horizontalLayout3.addWidget(self._selectionCheckBox)
+
+        spacerItem = QtWidgets.QSpacerItem(10, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        horizontalLayout3.addItem(spacerItem)
+
+        label = QtWidgets.QLabel(self)
+        label.setText("Active")
+        horizontalLayout3.addWidget(label)
+        self._activeFiltersCheckBox = QtWidgets.QCheckBox(self)
+        self._activeFiltersCheckBox.setCheckState(QtCore.Qt.Checked)
+        self._activeFiltersCheckBox.stateChanged.connect(lambda: self._checkBoxChanged(self._activeFiltersCheckBox,
+                                                                                       Filters.ACTIVE.value))
+        horizontalLayout3.addWidget(self._activeFiltersCheckBox)
+
         layout.addLayout(horizontalLayout)
         layout.addLayout(horizontalLayout2)
+        layout.addLayout(horizontalLayout3)
 
     def _fillComboBoxes(self, dataBaseInst):
         def _fillInfComboBox(comboBoxInst, base, itemsList, filterId):
@@ -181,8 +194,8 @@ class FilterWidget(QtWidgets.QWidget):
         self._dictFilters[Filters.NAME.value] = self._playerNameEdit.text()
         self.filterChanged.emit()
 
-    def _selectionCheckBoxChanged(self):
-        self._dictFilters[Filters.SELECTION.value] = (self._selectionCheckBox.checkState() == QtCore.Qt.Checked)
+    def _checkBoxChanged(self, checkBoxInst, filterId):
+        self._dictFilters[filterId] = (checkBoxInst.checkState() == QtCore.Qt.Checked)
         self.filterChanged.emit()
 
     def updateWidget(self, dataBaseInst):
@@ -257,6 +270,9 @@ class DataBaseTreeSortFilterModel(QtCore.QSortFilterProxyModel):
         self.invalidateFilter()
 
     def filterAcceptsRow(self, sourceRow, sourceParent):
+        if not self._dictFilters[Filters.ACTIVE.value]:
+            return True
+
         sourceParent = self.mapToSource(sourceParent)
         indexItem = self.sourceModel().index(sourceRow, 0, sourceParent)
         playerItem = self.sourceModel().itemFromIndex(indexItem)
