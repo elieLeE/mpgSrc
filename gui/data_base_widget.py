@@ -227,11 +227,14 @@ class DataBaseTreeView(TreeView):
         self.setModel(proxyModel)
 
         self.setDragEnabled(True)
+        self.sortByColumn(DataBaseTreeViewColumn.PRIZE.value[0])
 
     def _populate(self):
+        self.setSortingEnabled(False)
         if self._dataBaseInst is not None:
             for playerInst in self._dataBaseInst.getAllPlayers():
                 self.sourceModel().appendRow(self._getNewPlayerItemsList(playerInst))
+        self.setSortingEnabled(True)
 
     def _getNewPlayerItemsList(self, playerInst):
         playerItemsList = self._getNewItemsList(DataBasePlayerItem, playerInst)
