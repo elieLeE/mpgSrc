@@ -6,8 +6,9 @@ from enum import Enum
 import pickle
 from core.defines import Position, MAX_SUM_PRIZE_TEAM
 from model.players import Player
+from gui import widgets
 from gui.tree_view import TreeView
-from gui.defines import MimeTypes, UserRoles
+from gui.defines import MimeTypes, UserRoles, LayoutType
 
 
 class TeamWidget(QtWidgets.QWidget):
@@ -29,9 +30,9 @@ class TeamWidget(QtWidgets.QWidget):
         self._teamTreeView.teamChanged.connect(self._updateTotal)
 
     def setupUi(self):
-        layout = QtWidgets.QVBoxLayout(self)
+        layout = widgets.getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
 
-        horizontalLayout = QtWidgets.QHBoxLayout()
+        horizontalLayout = widgets.getConfiguredLayout(LayoutType.HORIZONTAL.value, margins=[0])
         totalPrizeLabel = QtWidgets.QLabel(self)
         totalPrizeLabel.setText("Total")
         horizontalLayout.addWidget(totalPrizeLabel)

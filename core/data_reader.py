@@ -2,10 +2,21 @@
 
 import csv
 import re
+from utils import path
 import xml.etree.cElementTree as xmlElt
-from core.defines import XML
+from core.defines import XML, EXT_FILES
 from model.players import Player
 from model.teams import Team
+
+
+def readDataBase(filePath, dataBaseInst):
+    ext = path.getFileExt(filePath)
+    if ext == EXT_FILES.CSV.value:
+        MPGDataBaseCSVFileReader(filePath).read(dataBaseInst)
+    elif ext == EXT_FILES.XML.value:
+        MPGDataBaseXMLFileReader(filePath).read(dataBaseInst)
+    else:
+        print("Data base not read. Unknown extension: {}".format(ext))
 
 
 class FileReader(object):

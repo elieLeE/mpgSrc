@@ -1,7 +1,9 @@
 # coding=utf-8
 
+from utils import path
 from core import data_reader
 from core import converting
+from core.defines import EXT_FILES
 from model.league import League
 from model.data_base import DataBase
 
@@ -35,6 +37,6 @@ class ApplicationManager(object):
             leagueInst.setDataBase(dataBaseInst)
         else:
             dataBaseInst = DataBase("", "")
-            data_reader.MPGDataBaseCSVFileReader(dataBasePath).read(dataBaseInst)
-            leagueInst.setDataBase(dataBaseInst)
+            data_reader.readDataBase(dataBasePath, dataBaseInst)
             self._databases[dataBasePath] = dataBaseInst
+        return dataBaseInst

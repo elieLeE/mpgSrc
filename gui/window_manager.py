@@ -13,7 +13,7 @@ class WindowManager(object):
 
     def registerMainWindow(self, mw):
         self._mainWindow = mw
-        self._addNewLeagueItem("aa")
+        # self._addNewLeagueItem("aa")
 
     def convertMPGDataBase(self):
         dialog = ConvertFileDialog(self._mainWindow)

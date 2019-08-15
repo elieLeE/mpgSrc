@@ -57,3 +57,6 @@ class XML(object):
     TAG_PERCENT_TIT = "percentTit"
 
 
+class EXT_FILES(Enum):
+    CSV = ".csv"
+    XML = ".xml"

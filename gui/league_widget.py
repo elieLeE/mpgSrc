@@ -1,14 +1,15 @@
 # coding=utf-8
-
+from gui import widgets
+from gui.defines import LayoutType
 from PySide2 import QtWidgets
 from gui.mercato_widget import MercatoWidget
 from gui.league_info_widget import LeagueInfoWidget
 
 
 class LeagueWidget(QtWidgets.QWidget):
-    def __init__(self, leagueItem, applicationManager, parent):
+    def __init__(self, leagueInst, applicationManager, parent):
         super(LeagueWidget, self).__init__(parent)
-        self._leagueItem = leagueItem
+        self._leagueInst = leagueInst
         self._applicationManager = applicationManager
 
         self._label = None
@@ -19,7 +20,7 @@ class LeagueWidget(QtWidgets.QWidget):
         self._chooseDataBase()
 
     def setupUi(self):
-        mainLayout = QtWidgets.QVBoxLayout(self)
+        mainLayout = widgets.getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
 
         toolbar = QtWidgets.QToolBar(self.tr("Tool bar"), self)
         toolbar.setStyleSheet("QToolBar {background-color: grey;}")
@@ -31,16 +32,18 @@ class LeagueWidget(QtWidgets.QWidget):
         mainLayout.addWidget(toolbar)
 
         tabWidget = QtWidgets.QTabWidget(self)
-        self._mercatoWidget = MercatoWidget(self._leagueItem, self)
+        self._mercatoWidget = MercatoWidget(self._leagueInst.getMercato(), self)
         tabWidget.addTab(self._mercatoWidget, "Mercato")
 
-        self._leagueInfoWidget = LeagueInfoWidget(self._leagueItem, self)
+        self._leagueInfoWidget = LeagueInfoWidget(self._leagueInst, self)
         tabWidget.addTab(self._leagueInfoWidget, "League info")
 
+        tabWidget.setTabEnabled(1, False)
         mainLayout.addWidget(tabWidget)
 
     def _chooseDataBase(self):
-        actualDataBase = self._leagueItem.getDataBase()
-        self._applicationManager.loadDataBaseInLeague(self._leagueItem, r"/home/lee/Bureau/mpg/data/liga/j18.csv")
-        if actualDataBase != self._leagueItem.getDataBase():
+        actualDataBase = self._leagueInst.getMercato().getDataBase()
+        dataBaseInst = self._applicationManager.loadDataBaseInLeague(self._leagueInst, r"/home/lee/Bureau/mpg/data/ligue1/j38.xml")
+        if actualDataBase != dataBaseInst:
+            self._leagueInst.getMercato().setDataBase(dataBaseInst)
             self._mercatoWidget.update()

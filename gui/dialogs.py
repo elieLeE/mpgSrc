@@ -1,8 +1,10 @@
 # coding=utf-8
 
 import os
-from core.defines import ChampName
 from PySide2 import QtWidgets
+from core.defines import ChampName
+from .defines import LayoutType
+from gui.widgets import FileBrowserPath, DirectoryBrowserPath, getConfiguredLayout
 
 
 class SrcDesPathWidget(QtWidgets.QWidget):
@@ -12,58 +14,31 @@ class SrcDesPathWidget(QtWidgets.QWidget):
         self._srcPathEdit = None
         self._desPathEdit = None
 
+        self._srcPathWidget = None
+        self._desPathWidget = None
+
         self.setupUi()
 
     def setupUi(self):
-        verticalLayout = QtWidgets.QVBoxLayout(self)
+        verticalLayout = getConfiguredLayout(LayoutType.VERTICAL.value, [0], 5, parent=self)
 
-        horizontalLayoutSrc = QtWidgets.QHBoxLayout()
-        labelSrc = QtWidgets.QLabel(self)
-        labelSrc.setText("Src")
-        horizontalLayoutSrc.addWidget(labelSrc)
+        self._srcPathWidget = FileBrowserPath("Src", self.tr("Files (*.csv)"), self)
+        self._srcPathWidget.pathChanged.connect(self._changeSrcPath)
 
-        self._srcPathEdit = QtWidgets.QLineEdit(self)
-        horizontalLayoutSrc.addWidget(self._srcPathEdit)
+        self._desPathWidget = DirectoryBrowserPath("Des", "", self)
 
-        srcBrowseButton = QtWidgets.QPushButton(self)
-        srcBrowseButton.setText("Browse")
-        srcBrowseButton.clicked.connect(self._changeSrcPath)
-        horizontalLayoutSrc.addWidget(srcBrowseButton)
+        verticalLayout.addWidget(self._srcPathWidget)
+        verticalLayout.addWidget(self._desPathWidget)
 
-        horizontalLayoutDes = QtWidgets.QHBoxLayout()
-        labelDes = QtWidgets.QLabel(self)
-        labelDes.setText("Des")
-        horizontalLayoutDes.addWidget(labelDes)
-
-        self._desPathEdit = QtWidgets.QLineEdit(self)
-        horizontalLayoutDes.addWidget(self._desPathEdit)
-
-        desBrowseButton = QtWidgets.QPushButton(self)
-        desBrowseButton.setText("Browse")
-        desBrowseButton.clicked.connect(self._changeDesPath)
-        horizontalLayoutDes.addWidget(desBrowseButton)
-
-        verticalLayout.addLayout(horizontalLayoutSrc)
-        verticalLayout.addLayout(horizontalLayoutDes)
-
-    def _changeSrcPath(self):
-        srcPath = QtWidgets.QFileDialog().getOpenFileName(self, self.tr("Select file"),
-                                                          os.path.dirname(self._srcPathEdit.text()),
-                                                          self.tr("Files (*.csv)"))[0]
-        if srcPath != "":
-            self._srcPathEdit.setText(srcPath)
-            self._desPathEdit.setText(os.path.dirname(srcPath))
-
-    def _changeDesPath(self):
-        desPath = QtWidgets.QFileDialog().getExistingDirectory(self, self.tr("Select file"), self._desPathEdit.text())
-        if len(desPath) != 0:
-            self._desPathEdit.setText(desPath)
+    def _changeSrcPath(self, newSrcPath):
+        if newSrcPath != "":
+            self._desPathWidget.resetPath(os.path.dirname(newSrcPath))
 
     def getSrcPath(self):
-        return self._srcPathEdit.text()
+        return self._srcPathWidget.getPathChosen()
 
     def getDesPath(self):
-        return self._desPathEdit.text()
+        return self._desPathWidget.getPathChosen()
 
 
 class ConvertFileDialog(QtWidgets.QDialog):
@@ -79,12 +54,12 @@ class ConvertFileDialog(QtWidgets.QDialog):
         self._fillDayNumberComboBox()
 
     def setupUi(self):
-        verticalLayout = QtWidgets.QVBoxLayout(self)
+        verticalLayout = getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
 
         self._srcDesPathWidget = SrcDesPathWidget(self)
         verticalLayout.addWidget(self._srcDesPathWidget)
 
-        horizontalLayoutOpts = QtWidgets.QHBoxLayout()
+        horizontalLayoutOpts = getConfiguredLayout(LayoutType.HORIZONTAL.value, margins=[0])
         labelSrc = QtWidgets.QLabel(self)
         labelSrc.setText("Champ")
         horizontalLayoutOpts.addWidget(labelSrc)
@@ -134,8 +109,8 @@ class NewLeagueDialog(QtWidgets.QDialog):
         self.setupUi()
 
     def setupUi(self):
-        verticalLayout = QtWidgets.QVBoxLayout(self)
-        horizontalLayout = QtWidgets.QHBoxLayout()
+        verticalLayout = getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
+        horizontalLayout = getConfiguredLayout(LayoutType.HORIZONTAL.value, margins=[0])
 
         label = QtWidgets.QLabel(self)
         label.setText("name : ")
@@ -154,3 +129,17 @@ class NewLeagueDialog(QtWidgets.QDialog):
 
     def getLeagueName(self):
         return self._nameLeagueEdit.text()
+
+
+class GetPathMercatoTurnDialog(QtWidgets.QDialog):
+    def __init__(self, parent):
+        super(GetPathMercatoTurnDialog, self).__init__(parent)
+
+        self._pathWidget = None
+
+        self.setupUi()
+
+    def setupUi(self):
+        verticalLayout = getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
+        self._pathWidget = FileBrowserPath("Src", self.tr("Files (*.csv)"), self)
+        verticalLayout.addWidget(self._pathWidget)

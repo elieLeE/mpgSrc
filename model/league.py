@@ -1,6 +1,6 @@
 # coding=utf-8
 
-import weakref
+from model.mercato import Mercato
 
 
 class League(object):
@@ -9,16 +9,10 @@ class League(object):
 
         self._leagueName = leagueName
         # self._dataBase = DataBase("", "")
-        self._dataBase = None
-        self._mercato = None
+        self._mercato = Mercato()
 
     def getName(self):
         return self._leagueName
 
-    def getDataBase(self):
-        if self._dataBase is None:
-            return None
-        return self._dataBase()
-
-    def setDataBase(self, dataBaseInst):
-        self._dataBase = weakref.ref(dataBaseInst)
+    def getMercato(self):
+        return self._mercato

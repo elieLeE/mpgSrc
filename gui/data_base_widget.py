@@ -6,6 +6,8 @@ import re
 from enum import Enum
 import pickle
 from core.defines import Position
+from gui import widgets
+from gui.defines import LayoutType
 from gui.tree_view import TreeView
 from gui.defines import MimeTypes, UserRoles
 
@@ -45,7 +47,7 @@ class ViewDataBaseWidget(QtWidgets.QWidget):
         self.setupUi()
 
     def setupUi(self):
-        layout = QtWidgets.QVBoxLayout(self)
+        layout = widgets.getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
 
         self._filterWidget = FilterWidget(self._dataBaseInst, self._dictFilters, self)
         layout.addWidget(self._filterWidget)
@@ -87,16 +89,16 @@ class FilterWidget(QtWidgets.QWidget):
         self._fillComboBoxes(dataBaseInst)
 
     def setupUi(self):
-        layout = QtWidgets.QVBoxLayout(self)
+        mainLayout = widgets.getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
 
-        horizontalLayout = QtWidgets.QHBoxLayout()
+        # horizontalLayout = widgets.getConfiguredLayout(LayoutType.HORIZONTAL.value, margins=[0])
         self._playerNameEdit = QtWidgets.QLineEdit(self)
         self._playerNameEdit.setPlaceholderText("Nom joueur")
         self._playerNameEdit.textChanged.connect(self._playerNameEditChanged)
-        horizontalLayout.addWidget(self._playerNameEdit)
+        # horizontalLayout.addWidget(self._playerNameEdit)
+        mainLayout.addWidget(self._playerNameEdit)
 
-        horizontalLayout2 = QtWidgets.QHBoxLayout()
-
+        horizontalLayout2 = widgets.getConfiguredLayout(LayoutType.HORIZONTAL.value, margins=[0])
         self._teamComboBox = QtWidgets.QComboBox(self)
         self._teamComboBox.currentIndexChanged.connect(lambda: self._comboBoxChanged(self._teamComboBox,
                                                                                      Filters.TEAMS.value))
@@ -135,8 +137,7 @@ class FilterWidget(QtWidgets.QWidget):
         # self._goalsNumberComboBox.setStyleSheet("color: rgb(160, 160, 164);")
         horizontalLayout2.addWidget(self._goalsNumberComboBox)
 
-        horizontalLayout3 = QtWidgets.QHBoxLayout()
-
+        horizontalLayout3 = widgets.getConfiguredLayout(LayoutType.HORIZONTAL.value, margins=[0])
         label = QtWidgets.QLabel(self)
         label.setText("Selection")
         horizontalLayout3.addWidget(label)
@@ -157,9 +158,8 @@ class FilterWidget(QtWidgets.QWidget):
                                                                                        Filters.ACTIVE.value))
         horizontalLayout3.addWidget(self._activeFiltersCheckBox)
 
-        layout.addLayout(horizontalLayout)
-        layout.addLayout(horizontalLayout2)
-        layout.addLayout(horizontalLayout3)
+        mainLayout.addLayout(horizontalLayout2)
+        mainLayout.addLayout(horizontalLayout3)
 
     def _fillComboBoxes(self, dataBaseInst):
         def _fillInfComboBox(comboBoxInst, base, itemsList, filterId):
@@ -227,7 +227,6 @@ class DataBaseTreeView(TreeView):
         self.setModel(proxyModel)
 
         self.setDragEnabled(True)
-        self.sortByColumn(DataBaseTreeViewColumn.PRIZE.value[0])
 
     def _populate(self):
         self.setSortingEnabled(False)
@@ -235,6 +234,7 @@ class DataBaseTreeView(TreeView):
             for playerInst in self._dataBaseInst.getAllPlayers():
                 self.sourceModel().appendRow(self._getNewPlayerItemsList(playerInst))
         self.setSortingEnabled(True)
+        self.sortByColumn(DataBaseTreeViewColumn.PRIZE.value[0])
 
     def _getNewPlayerItemsList(self, playerInst):
         playerItemsList = self._getNewItemsList(DataBasePlayerItem, playerInst)
