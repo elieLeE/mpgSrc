@@ -6,7 +6,7 @@ from core.defines import Position
 class Team(object):
     def __init__(self, _id):
         self._id = _id
-        self._players = {Position.GOAL: [], Position.DEFENDER: [], Position.MILIEU: [], Position.STRIKER: []}
+        self._players = {Position.GOAL.value: [], Position.DEFENDER.value: [], Position.MILIEU.value: [], Position.STRIKER.value: []}
 
     def getId(self):
         return self._id

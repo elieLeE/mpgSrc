@@ -40,6 +40,9 @@ class Player(object):
     def getBuyPrize(self):
         return self._buyPrize
 
+    def setBuyPrize(self, newPrize):
+        self._buyPrize = newPrize
+
     def getPercentTit(self):
         return self._percentTit
 

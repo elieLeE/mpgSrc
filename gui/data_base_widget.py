@@ -254,7 +254,7 @@ class DataBaseTreeView(TreeView):
         self.refresh()
 
     def selectPlayerItem(self, playerId):
-        itemsIndex = self._getItems(UserRoles.ID_ROLE.value, playerId)
+        itemsIndex = self._getIndexes(UserRoles.ID_ROLE.value, playerId)
         if len(itemsIndex) == 1:
             sourceIndex = self.model().mapToSource(itemsIndex[0])
             playerItem = self.sourceModel().itemFromIndex(sourceIndex)

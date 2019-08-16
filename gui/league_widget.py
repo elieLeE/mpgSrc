@@ -43,7 +43,7 @@ class LeagueWidget(QtWidgets.QWidget):
 
     def _chooseDataBase(self):
         actualDataBase = self._leagueInst.getMercato().getDataBase()
-        dataBaseInst = self._applicationManager.loadDataBaseInLeague(self._leagueInst, r"/home/lee/Bureau/mpg/data/ligue1/j38.xml")
+        dataBaseInst = self._applicationManager.loadDataBaseInLeague(self._leagueInst, r"/home/lee/Bureau/mpg/data/premier_league/j38.csv")
         if actualDataBase != dataBaseInst:
             self._leagueInst.getMercato().setDataBase(dataBaseInst)
             self._mercatoWidget.update()

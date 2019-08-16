@@ -1,6 +1,8 @@
 # coding=utf-8
 
 from PySide2 import QtWidgets
+from gui import widgets
+from gui.defines import LayoutType
 
 
 class LeagueInfoWidget(QtWidgets.QWidget):
@@ -12,7 +14,7 @@ class LeagueInfoWidget(QtWidgets.QWidget):
         self.setupUi()
 
     def setupUi(self):
-        layout = QtWidgets.QVBoxLayout(self)
+        layout = widgets.getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
 
         label = QtWidgets.QLabel(self)
         label.setText("league info")

@@ -25,9 +25,10 @@ class TeamWidget(QtWidgets.QWidget):
 
         self.setAcceptDrops(True)
 
-        self._updateTotal(None)
+        self._updateTotal()
 
-        self._teamTreeView.teamChanged.connect(self._updateTotal)
+        self._teamTreeView.teamChanged.connect(self._changeCompoTeam)
+        self._teamTreeView.playerPrizeChanged.connect(self._updateTotal)
 
     def setupUi(self):
         layout = widgets.getConfiguredLayout(LayoutType.VERTICAL.value, parent=self)
@@ -72,13 +73,15 @@ class TeamWidget(QtWidgets.QWidget):
             return
         event.ignore()
 
-    def _updateTotal(self, playerInst):
+    def _changeCompoTeam(self, playerInst):
         if playerInst is not None:
             if playerInst.getId() not in self._playersDict:
                 self._playersDict[playerInst.getId()] = playerInst
             else:
                 del self._playersDict[playerInst.getId()]
+        self._updateTotal()
 
+    def _updateTotal(self):
         newSum = 0
         for playerInst in self._playersDict.values():
             newSum += playerInst.getBuyPrize()
@@ -95,12 +98,13 @@ class TeamTreeViewColumn(Enum):
     EVAL_MOY = NAME[0] + 1, "Note Moy"
     GAOL_NUMBER = EVAL_MOY[0] + 1, "Buts"
     PERCENT_TIT = GAOL_NUMBER[0] + 1, "Titulaire"
-    PRIZE = PERCENT_TIT[0] + 1, "Prix"
+    PRIZE = PERCENT_TIT[0] + 1, "Prix min \ actuel"
     CLOSE = PRIZE[0] + 1, "Close"
 
 
 class TeamTreeView(TreeView):
     teamChanged = QtCore.Signal(Player)
+    playerPrizeChanged = QtCore.Signal()
 
     def __init__(self, parent):
         super(TeamTreeView, self).__init__(TeamTreeViewColumn, parent)
@@ -108,31 +112,34 @@ class TeamTreeView(TreeView):
         self.setModel(QtGui.QStandardItemModel())
         self._setHeader()
 
-        closeButtonDelegate = CloseButtonTreeViewDelegate()
+        closeButtonDelegate = CloseButtonTreeViewDelegate(self)
         self.setItemDelegateForColumn(TeamTreeViewColumn.CLOSE.value[0], closeButtonDelegate)
-        closeButtonDelegate.buttonClicked.connect(self.removePlayer)
+        closeButtonDelegate.buttonClicked.connect(self._removePlayer)
+
+        prizeEditDelegate = PrizeEditDelegate(self)
+        self.setItemDelegateForColumn(TeamTreeViewColumn.PRIZE.value[0], prizeEditDelegate)
+        prizeEditDelegate.commitData.connect(self._playerPrizeChanged)
 
         self._populate()
         self.expandAll()
 
-    def _determineNewSum(self):
-        pass
-
     def _populate(self):
-        self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.GOAL.value))
-        self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.DEFENDER.value))
-        self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.MILIEU.value))
-        self.sourceModel().appendRow(self._getNewItemsList(TopLevelItem, Position.STRIKER.value))
+        self.sourceModel().appendRow(self._getNewItemsList(PositionItem, Position.GOAL.value))
+        self.sourceModel().appendRow(self._getNewItemsList(PositionItem, Position.DEFENDER.value))
+        self.sourceModel().appendRow(self._getNewItemsList(PositionItem, Position.MILIEU.value))
+        self.sourceModel().appendRow(self._getNewItemsList(PositionItem, Position.STRIKER.value))
 
     def addNewPlayer(self, playerInst):
         globalPos = Position.getGloBasPos(playerInst.getPosition())
-        topLevelItem = self.sourceModel().findItems(globalPos.value, column=TeamTreeViewColumn.NAME.value[0])
-        if topLevelItem:
-            topLevelItem[0].appendRow(self._getNewPlayerItemsList(playerInst))
-            self.teamChanged.emit(playerInst)
+        posItemIndex = self._getIndexes(UserRoles.ID_ROLE.value, globalPos)
+        if len(posItemIndex) == 1:
+            posItem = self.sourceModel().itemFromIndex(posItemIndex[0])
+            if posItem:
+                posItem.appendRow(self._getNewPlayerItemsList(playerInst))
+                self.teamChanged.emit(playerInst)
 
     def hasAlreadyPlayer(self, playerInst):
-        return len(self._getItems(UserRoles.ID_ROLE.value, playerInst.getId())) == 1
+        return len(self._getIndexes(UserRoles.ID_ROLE.value, playerInst.getId())) == 1
 
     def _getNewPlayerItemsList(self, playerInst):
         playerItemsList = self._getNewItemsList(TeamPlayerItem, playerInst)
@@ -141,12 +148,74 @@ class TeamTreeView(TreeView):
         playerItemsList[TeamTreeViewColumn.PRIZE.value[0]].setEditable(True)
         return playerItemsList
 
-    def removePlayer(self, indexItem):
+    def _removePlayer(self, indexItem):
         playerItem = self.model().itemFromIndex(indexItem)
         if playerItem is not None:
             playerInst = playerItem.getPlayerInst()
             self.teamChanged.emit(playerInst)
         self.model().removeRow(indexItem.row(), indexItem.parent())
+
+    def _playerPrizeChanged(self, editor):
+        self.playerPrizeChanged.emit()
+
+
+class PrizeEditDelegate(QtWidgets.QStyledItemDelegate):
+    def __init__(self, parent):
+        super(PrizeEditDelegate, self).__init__(parent)
+
+        self._actualPrize = -1
+        self._firstState = True
+
+    # def createEditor(self, parent, options, index):
+    #     def _textChanged():
+    #         print(editor.text())
+    #         print("textChanged")
+    #         if self._firstState:
+    #             editor.setText("47 ")
+    #             self._firstState = False
+    #
+    #     editor = QtWidgets.QLineEdit(parent)
+    #     editor.setText("47 ")
+    #     editor.textChanged.connect(_textChanged)
+    #     return editor
+
+    def paint(self, painter, option, index):
+        if not index.parent().isValid():
+            return
+
+        playerItem = index.model().itemFromIndex(index)
+        if playerItem is None:
+            raise Exception("Player has not been found")
+        playerDataInst = playerItem.getPlayerInst()
+
+        rect = option.rect
+
+        rect1 = QtCore.QRect(rect.x(), rect.y(), rect.width()/2, rect.height())
+        rect1.setHeight(15)
+        painter.setPen(QtCore.Qt.gray)
+        painter.drawText(rect1, QtCore.Qt.AlignCenter, str(playerDataInst.getOffPrize()))
+
+        rect2 = QtCore.QRect(rect.x() + rect1.width(), rect.y(), rect.width() / 2, rect.height())
+        rect2.setHeight(15)
+        actualPrize = self._actualPrize if self._actualPrize != -1 else playerDataInst.getBuyPrize()
+        if actualPrize >= playerDataInst.getOffPrize():
+            painter.setPen(QtCore.Qt.black)
+        else:
+            painter.setPen(QtCore.Qt.red)
+        painter.drawText(rect2, QtCore.Qt.AlignCenter, str(playerDataInst.getBuyPrize()))
+
+        painter.drawText(rect, QtCore.Qt.AlignCenter, '\\')
+
+    # def editorEvent(self, event, model, option, index):
+    #     if event.type() == QtCore.QEvent.MouseButtonPress and event.type() == QtCore.QEvent.MouseButtonRelease:
+    #         self._actualPrize = -1
+    #         # return True
+    #
+    #     if event.type() == QtGui.QKeyEvent:
+    #         print("here")
+    #
+    #     # return True
+    #     # return super(PrizeEditDelegate, self).editorEvent(event, model, option, index)
 
 
 class CloseButtonTreeViewDelegate(QtWidgets.QStyledItemDelegate):
@@ -154,8 +223,8 @@ class CloseButtonTreeViewDelegate(QtWidgets.QStyledItemDelegate):
 
     _state = QtWidgets.QStyle.State_Enabled
 
-    def __init__(self):
-        super(CloseButtonTreeViewDelegate, self).__init__()
+    def __init__(self, parent):
+        super(CloseButtonTreeViewDelegate, self).__init__(parent)
 
     def paint(self, painter, option, index):
         if not index.parent().isValid():
@@ -226,18 +295,26 @@ class TeamPlayerItem(QtGui.QStandardItem):
             return self._playerDataInst.getId()
         return super(TeamPlayerItem, self).data(role)
 
+    def setData(self, value, role:int=...):
+        if self.column() == TeamTreeViewColumn.PRIZE.value[0]:
+            self._playerDataInst.setBuyPrize(int(value))
+
     def getPlayerInst(self):
         return self._playerDataInst
 
 
-class TopLevelItem(QtGui.QStandardItem):
+class PositionItem(QtGui.QStandardItem):
     def __init__(self, topLevelName):
-        super(TopLevelItem, self).__init__()
+        super(PositionItem, self).__init__()
 
-        self._topLevelName = topLevelName
+        self._posName = topLevelName
+        self._minChildrenNumber = "2" if topLevelName == Position.GOAL.value else "6" \
+            if topLevelName in [Position.DEFENDER.value, Position.MILIEU.value] else "4"
 
     def data(self, role: int = ...):
         if role == QtCore.Qt.DisplayRole:
             if self.column() == TeamTreeViewColumn.NAME.value[0]:
-                return self._topLevelName
-        return super(TopLevelItem, self).data(role)
+                return "{} - {} \\ {}".format(self._posName, self.rowCount(), self._minChildrenNumber)
+        elif role == UserRoles.ID_ROLE.value:
+            return self._posName
+        return super(PositionItem, self).data(role)

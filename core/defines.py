@@ -18,13 +18,13 @@ class Position(Enum):
 
     @staticmethod
     def getGloBasPos(realPos):
-        if realPos == Position.GOAL:
-            return Position.GOAL
-        if realPos in [Position.CENTRAL_DEFENDER, Position.LATERAL_DEFENDER]:
-            return Position.DEFENDER
-        if realPos in [Position.MILIEU_DEFENSIVE, Position.MILIEU_OFFENSIVE]:
-            return Position.MILIEU
-        return Position.STRIKER
+        if realPos == Position.GOAL.value:
+            return Position.GOAL.value
+        if realPos in [Position.CENTRAL_DEFENDER.value, Position.LATERAL_DEFENDER.value]:
+            return Position.DEFENDER.value
+        if realPos in [Position.MILIEU_DEFENSIVE.value, Position.MILIEU_OFFENSIVE.value]:
+            return Position.MILIEU.value
+        return Position.STRIKER.value
 
 
 class ChampName(Enum):

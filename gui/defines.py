@@ -10,3 +10,10 @@ class MimeTypes(Enum):
 
 class UserRoles(Enum):
     ID_ROLE = QtCore.Qt.UserRole + 1
+
+
+class LayoutType(Enum):
+    HORIZONTAL = 0x0
+    VERTICAL = 0x1
+
+

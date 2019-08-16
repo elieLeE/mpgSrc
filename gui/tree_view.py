@@ -17,10 +17,10 @@ class TreeView(QtWidgets.QTreeView):
     def _setHeader(self):
         self.sourceModel().setHorizontalHeaderLabels([v.value[1] for v in list(self._treeViewColumnEnum)])
 
-    def _getNewItemsList(self, playerItemClass, dataItem):
-        return [playerItemClass(dataItem) for _ in list(self._treeViewColumnEnum)]
+    def _getNewItemsList(self, itemClass, dataItem):
+        return [itemClass(dataItem) for _ in list(self._treeViewColumnEnum)]
 
-    def _getItems(self, role, v):
+    def _getIndexes(self, role, v):
         return self.model().match(self.model().index(0, 0), role, v,
                                   flags=QtCore.Qt.MatchExactly | QtCore.Qt.MatchRecursive)
 
